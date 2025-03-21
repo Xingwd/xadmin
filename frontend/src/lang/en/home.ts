@@ -1,0 +1,18 @@
+export default {
+    'You have worked today': 'You have worked today:  ',
+    'Continue to work': 'Keep working',
+    'have a bit of rest': 'Take a break',
+    'Recent 1 Week Logins': 'Recent 1 Week Logins',
+    'Recent 1 Month Logins': 'Recent 1 Month Logins',
+    'Recent 1 Week Operations': 'Recent 1 Week Operations',
+    'Recent 1 Month Operations': 'Recent 1 Month Operations',
+    'Recent 1 Week Behavior Trend': 'Recent 1 Week Behavior Trend',
+    'Recent 1 Month Behavior Trend': 'Recent 1 Month Behavior Trend',
+    Loading: 'Loading',
+    'Frequently used menus': 'Frequently used menus',
+    'Behavioral statistics': 'Behavioral statistics',
+    hour: 'Hour',
+    minute: 'Minute',
+    second: 'Second',
+    day: 'Day',
+}

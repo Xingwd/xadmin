@@ -1,0 +1,18 @@
+export default {
+    'You have worked today': '您今天已工作了',
+    'Continue to work': '继续工作',
+    'have a bit of rest': '休息片刻',
+    'Recent 1 Week Logins': '近1周登录次数',
+    'Recent 1 Month Logins': '近1月登录次数',
+    'Recent 1 Week Operations': '近1周操作次数',
+    'Recent 1 Month Operations': '近1月操作次数',
+    'Recent 1 Week Behavior Trend': '近1周行为趋势',
+    'Recent 1 Month Behavior Trend': '近1月行为趋势',
+    Loading: '加载中...',
+    'Frequently used menus': '常用功能',
+    'Behavioral statistics': '行为统计',
+    hour: '小时',
+    minute: '分',
+    second: '秒',
+    day: '天',
+}
