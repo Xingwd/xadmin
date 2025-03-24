@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sqlmodel import Session, select
 
 from app.crud.common import handle_search_params
@@ -33,14 +35,24 @@ def update_role(*, session: Session, db_role: Role, role_update: RoleUpdate) -> 
         exclude_unset=True, exclude={"permissions", "users"}
     )
     db_role.sqlmodel_update(role_data)
-    db_role.permissions = (
+
+    # 更新权限
+    new_permissions = (
         [session.get(Rule, id) for id in role_update.permissions]
         if role_update.permissions
         else []
     )
-    db_role.users = (
+    if new_permissions != db_role.permissions:
+        db_role.permissions = new_permissions
+        db_role.updated_at = datetime.now()
+    # 更新用户
+    new_users = (
         [session.get(User, id) for id in role_update.users] if role_update.users else []
     )
+    if new_users != db_role.users:
+        db_role.users = new_users
+        db_role.updated_at = datetime.now()
+
     session.add(db_role)
     session.commit()
     session.refresh(db_role)
