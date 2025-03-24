@@ -72,6 +72,13 @@ const xaTable = new XaTableClass(
                 formatter: (_row, _column, cellValue, _index) => {
                     return cellValue.map((item: anyObj) => item.name)
                 },
+                getRenderKey: (row, field, _column, index) => {
+                    const renderKey =
+                        index +
+                        (field.render ? '-' + field.render : '') +
+                        (field.prop ? '-' + field.prop + '-' + row[field.prop].map((item: anyObj) => [item.id, item.name].join('-')).join('-') : '')
+                    return renderKey
+                },
             },
             {
                 label: t('system.users.Source'),

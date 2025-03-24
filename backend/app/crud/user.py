@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from typing import Any
 
 from sqlmodel import Session, and_, func, select
@@ -55,9 +55,15 @@ def update_user(*, session: Session, db_user: User, user_update: UserUpdate) -> 
         hashed_password = get_password_hash(password)
         extra_data["hashed_password"] = hashed_password
     db_user.sqlmodel_update(user_data, update=extra_data)
-    db_user.roles = (
+
+    # 更新用户角色
+    new_roles = (
         [session.get(Role, id) for id in user_update.roles] if user_update.roles else []
     )
+    if new_roles != db_user.roles:
+        db_user.roles = new_roles
+        db_user.updated_at = datetime.now()
+
     session.add(db_user)
     session.commit()
     session.refresh(db_user)
