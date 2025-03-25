@@ -129,7 +129,7 @@ def test_delete_operation_log_not_enough_permissions(
     assert msg["detail"] == "Not enough permissions"
 
 
-def test_operation_log_active_record(
+def test_operation_log_submit(
     client: TestClient, superuser_token_headers: dict[str, str]
 ) -> None:
     rule_name = random_lower_string()
