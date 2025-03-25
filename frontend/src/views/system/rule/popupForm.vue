@@ -159,7 +159,7 @@
                         ></el-input>
                     </el-form-item>
                     <FormItem
-                        :label="t('system.rules.cache')"
+                        :label="t('Cache')"
                         v-model="xaTable.form.items!.cache"
                         type="radio"
                         :input-attr="{

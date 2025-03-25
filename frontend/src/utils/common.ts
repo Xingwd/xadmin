@@ -9,7 +9,7 @@ import { useSiteConfig } from '/@/stores/siteConfig'
 import { useTitle } from '@vueuse/core'
 import { i18n } from '/@/lang'
 import { getUrl } from './query'
-import { isArray, trim, trimStart } from 'lodash-es'
+import { trim, trimStart } from 'lodash-es'
 import type { TranslateOptions } from 'vue-i18n'
 
 export function registerIcons(app: App) {
@@ -185,9 +185,9 @@ export function auth(node: string | { name: string; subNodeName?: string }) {
  * @param domain 指定域名
  */
 export const fullUrl = (relativeUrl: string, domain = '') => {
-    const cdnUrl = import.meta.env.VITE_SITE_URL
+    const siteUrl = import.meta.env.VITE_SITE_URL
     if (!domain) {
-        domain = cdnUrl ? cdnUrl : getUrl()
+        domain = siteUrl ? siteUrl : getUrl()
     }
     if (!relativeUrl) return domain
 
