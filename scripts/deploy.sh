@@ -6,10 +6,8 @@ set -e
 DOMAIN=${DOMAIN?Variable not set} \
 STACK_NAME=${STACK_NAME?Variable not set} \
 TAG=${TAG?Variable not set} \
-docker-compose \
+docker compose \
 -f docker-compose.yml \
-config > docker-stack.yml
+config > docker-compose-deploy.yml
 
-docker-auto-labels docker-stack.yml
-
-docker stack deploy -c docker-stack.yml --with-registry-auth "${STACK_NAME?Variable not set}"
+docker compose -f docker-compose-deploy.yml -p ${STACK_NAME?Variable not set} up -d --no-build
