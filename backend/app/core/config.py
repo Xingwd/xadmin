@@ -81,7 +81,7 @@ class Settings(BaseSettings):
     LOG_STATIC_PATHS: dict[str, str] = {
         f"{API_V1_STR}/login/access-token": "登录",
         f"{API_V1_STR}/login/test-token": "测试Token",
-        f"{API_V1_STR}/operation-logs/active-record": "query_params.rule_name",
+        f"{API_V1_STR}/operation-logs/submit": "query_params.rule_name",
     }
     USER_HOME_FEATURES_EXCLUDE_PATHS: list[tuple[str, str]] = [
         ("POST", f"{API_V1_STR}/login/access-token"),
