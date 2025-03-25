@@ -78,6 +78,7 @@ fastapi dev app/main.py
 
 ```dotenv
 DOMAIN=localhost.xadmin.com
+FRONTEND_HOST=http://dashboard.localhost.xadmin.com
 ```
 
 这将被 Docker Compose 文件用于配置服务的基础域。

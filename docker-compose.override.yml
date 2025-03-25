@@ -84,9 +84,10 @@ services:
       context: ./frontend
       dockerfile: dev.Dockerfile
       args:
-        - VITE_SITE_URL=http://localhost:5173
         - VITE_API_URL=http://localhost:8000
         - NODE_ENV=development
+    labels:
+      - traefik.http.services.${STACK_NAME?Variable not set}-frontend.loadbalancer.server.port=5173
     develop:
       watch:
         - path: ./frontend

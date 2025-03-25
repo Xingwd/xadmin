@@ -6,7 +6,9 @@ import { getUrl } from '/@/utils/query'
 /**
  * 动态加载的 css 和 js
  */
-const cssUrls: Array<string> = ['//at.alicdn.com/t/font_3135462_5axiswmtpj.css']
+const cssUrls: Array<string> = [
+    '//at.alicdn.com/t/a/font_115436_hzcwaxlqev.css', // iconfont css url，如果icon变少或者没有，则需要更新地址，使用帮助：https://www.iconfont.cn/help/detail?helptype=code
+]
 const jsUrls: Array<string> = []
 
 /*
@@ -49,7 +51,8 @@ function getStylesFromVite(devId: string) {
     const sheets = []
     const styles: StyleSheetList = document.styleSheets
     if (import.meta.env.MODE == 'production') {
-        const url = getUrl()
+        const siteUrl = import.meta.env.VITE_SITE_URL
+        const url = siteUrl ? siteUrl : getUrl()
         for (const key in styles) {
             if (styles[key].href && styles[key].href?.indexOf(url) === 0) {
                 sheets.push(styles[key])
