@@ -18,7 +18,7 @@
   - 🦇 支持暗黑主题（Dark mode）。
 - 🐋 [Docker Compose](https://www.docker.com) 用于开发环境和生产环境。
 - 🔒 默认使用密码哈希来保证安全。
-- 🔑 JWT (JSON Web Token) 令牌用于权限验证。
+- 🔑 JWT (JSON Web Token) 令牌和 Oauth2 用于权限验证。
 - ✅ 单元测试用了 [Pytest](https://pytest.org)。
 - 📞 [Traefik](https://traefik.io) 用于反向代理和负载均衡。
 

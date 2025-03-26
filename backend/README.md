@@ -89,6 +89,16 @@ root@7f2607af31c3:/app# fastapi run --reload app/main.py
 
 ……前面的细节使得让容器保持存活状态但不执行任何操作是有用的，然后在 Bash 会话中，使其运行实时重新加载服务器。
 
+## 权限
+
+后端已封装权限模型，可根据配置的 `api path` 自动生成 `CRUD` 权限。如需增加或修改权限，可修改 `./backend/app/core/security.py` 文件中的 `ApiPermissions` 枚举类。
+
+定义好权限后，即可通过 `Security scopes` 使用权限，示例：
+
+```python
+Security(get_current_user, scopes=[ApiPermissions.RULES.value.read.name])
+```
+
 ## 后端测试
 
 要测试后端，请运行：
