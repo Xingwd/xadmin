@@ -90,6 +90,7 @@ def read_rule(session: SessionDep, id: int) -> RuleTreePublic:
         Security(get_current_user, scopes=[ApiPermissions.RULES.value.create.name])
     ],
     response_model=Message,
+    status_code=201,
 )
 def create_rule(*, session: SessionDep, rule_in: RuleCreate) -> Message:
     """

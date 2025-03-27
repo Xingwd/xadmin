@@ -1,7 +1,7 @@
 import type { CreateClientConfig } from './client/client.gen'
 import { Local } from '/@/utils/storage'
 import { ACCESS_TOKEN } from '/@/stores/constant/cacheKey'
-import { getUrl } from './utils/query'
+import { getUrl } from './utils/request'
 
 export const createClientConfig: CreateClientConfig = (config) => ({
     ...config,

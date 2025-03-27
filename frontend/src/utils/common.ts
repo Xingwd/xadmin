@@ -8,7 +8,7 @@ import type { FormInstance } from 'element-plus'
 import { useSiteConfig } from '/@/stores/siteConfig'
 import { useTitle } from '@vueuse/core'
 import { i18n } from '/@/lang'
-import { getUrl } from './query'
+import { getUrl } from '/@/utils/request'
 import { trim, trimStart } from 'lodash-es'
 import type { TranslateOptions } from 'vue-i18n'
 
@@ -160,7 +160,7 @@ export function auth(node: { name: string; subNodeName?: string }): boolean
  * 提供 string 将根据当前路由 path 自动拼接和鉴权，还可以提供路由的 name 对象进行鉴权
  * @param node
  */
-export function auth(node: string | { name: string; subNodeName?: string }) {
+export function auth(node: string | { name: string; subNodeName?: string }): boolean {
     const store = useNavTabs()
     if (typeof node === 'string') {
         const name = router.currentRoute.value.name as string

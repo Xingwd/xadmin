@@ -98,9 +98,6 @@ const getRenderKey = (key: number, item: TableColumn, scope: any) => {
     if (item.getRenderKey && typeof item.getRenderKey == 'function') {
         return item.getRenderKey(scope.row, item, scope.column, scope.$index)
     }
-    if (item.render == 'switch') {
-        return item.render + item.prop
-    }
     return key + scope.$index + '-' + item.render + '-' + (item.prop ? '-' + item.prop + '-' + scope.row[item.prop] : '')
 }
 

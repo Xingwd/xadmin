@@ -50,6 +50,7 @@ def read_role(session: SessionDep, id: int) -> RolePublic:
         Security(get_current_user, scopes=[ApiPermissions.ROLES.value.create.name])
     ],
     response_model=Message,
+    status_code=201,
 )
 def create_role(*, session: SessionDep, role_in: RoleCreate) -> Message:
     """

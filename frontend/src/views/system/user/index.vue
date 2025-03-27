@@ -138,7 +138,11 @@ const xaTable = new XaTableClass(
             is_superuser: false,
         },
     },
-    {},
+    {
+        onTableDblclick: (): boolean => {
+            return xaTable.auth('edit')
+        },
+    },
     {
         requestEdit: () => {
             xaTable.form.items!.roles = xaTable.form.items!.roles.map((item: any) => item.id)

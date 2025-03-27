@@ -1,3 +1,5 @@
+name: ${STACK_NAME?Variable not set}
+
 services:
 
   db:

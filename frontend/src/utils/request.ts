@@ -18,6 +18,14 @@ export const getUrlPort = (): string => {
 }
 
 /**
+ * 判断是否成功
+ * @param {*} status
+ */
+export const isSuccess = (status: number): boolean => {
+    return status >= 200 && status < 300
+}
+
+/**
  * 处理状态
  * @param {*} result
  */
@@ -28,11 +36,11 @@ export function httpStatusHandle(result: any) {
         switch (result.status) {
             case 200:
                 messageType = 'success'
-                message = result.data.message ? result.data.message : i18n.global.t('axios.Operation successful')
+                message = i18n.global.t('axios.Operation successful')
                 break
             case 201:
                 messageType = 'success'
-                message = result.data.message ? result.data.message : i18n.global.t('axios.Operation successful')
+                message = i18n.global.t('axios.Operation successful')
                 break
             case 302:
                 message = i18n.global.t('axios.Interface redirected!')

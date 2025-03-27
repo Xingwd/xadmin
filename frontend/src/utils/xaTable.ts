@@ -4,7 +4,7 @@ import { cloneDeep, isEmpty } from 'lodash-es'
 import { computed, ComputedRef, reactive } from 'vue'
 import { useRoute } from 'vue-router'
 import { auth, getArrayKey } from '/@/utils/common'
-import { httpStatusHandle } from '/@/utils/query'
+import { httpStatusHandle, isSuccess } from '/@/utils/request'
 import type { UseMutationReturn, UseQueryReturn } from '@pinia/colada'
 import { useMutation, useQuery, useQueryCache } from '@pinia/colada'
 
@@ -128,9 +128,12 @@ export default class XaTable {
         ids.forEach((id, index, array) => {
             this.delMutationReturn = useMutation({
                 mutation: () => this.api.del!({ path: { [this.table.pk!]: id } }),
-                onSuccess: (data) => {
+                onSuccess: (data, _vars, _context) => {
                     httpStatusHandle(data)
-                    this.runAfter('del')
+                    const status = (data as anyObj).status
+                    if (status && typeof status === 'number' && isSuccess(status)) {
+                        this.runAfter('del')
+                    }
                 },
                 onError: (error) => {
                     console.error(error)
@@ -201,10 +204,13 @@ export default class XaTable {
             if (operate == 'Add' && typeof this.api.add == 'function') {
                 this.addMutationReturn = useMutation({
                     mutation: () => this.api.add!({ body: this.form.items! }),
-                    onSuccess: (data) => {
+                    onSuccess: (data, _vars, _context) => {
                         httpStatusHandle(data)
-                        this.toggleForm()
-                        this.runAfter('onSubmit')
+                        const status = (data as anyObj).status
+                        if (status && typeof status === 'number' && isSuccess(status)) {
+                            this.toggleForm()
+                            this.runAfter('onSubmit')
+                        }
                     },
                     onError: (error) => {
                         console.error(error)
@@ -218,15 +224,18 @@ export default class XaTable {
             } else if (operate == 'Edit' && typeof this.api.edit == 'function') {
                 this.editMutationReturn = useMutation({
                     mutation: () => this.api.edit!({ path: { [this.table.pk!]: this.form.operateRows![0][this.table.pk!] }, body: this.form.items! }),
-                    onSuccess: (data) => {
+                    onSuccess: (data, _vars, _context) => {
                         httpStatusHandle(data)
-                        this.form.operateRows?.shift()
-                        if (this.form.operateRows!.length > 0) {
-                            this.toggleForm('Edit', this.form.operateRows)
-                        } else {
-                            this.toggleForm()
+                        const status = (data as anyObj).status
+                        if (status && typeof status === 'number' && isSuccess(status)) {
+                            this.form.operateRows?.shift()
+                            if (this.form.operateRows!.length > 0) {
+                                this.toggleForm('Edit', this.form.operateRows)
+                            } else {
+                                this.toggleForm()
+                            }
+                            this.runAfter('onSubmit')
                         }
-                        this.runAfter('onSubmit')
                     },
                     onError: (error) => {
                         console.error(error)
