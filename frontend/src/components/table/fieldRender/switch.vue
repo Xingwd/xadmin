@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-switch v-if="field.prop" @change="onChange" :model-value="cellValue" :loading="isLoading" />
+        <el-switch v-if="field.prop" :disabled="!xaTable.auth('edit')" :model-value="cellValue" :loading="isLoading" @change="onChange" />
     </div>
 </template>
 
@@ -8,9 +8,10 @@
 import { TableColumnCtx } from 'element-plus'
 import { cloneDeep } from 'lodash-es'
 import { inject, ref } from 'vue'
+import { useMutation } from '@pinia/colada'
 import { getCellValue } from '/@/components/table/index'
 import type XaTableClass from '/@/utils/xaTable'
-import { useMutation } from '@pinia/colada'
+import { httpStatusHandle, isSuccess } from '/@/utils/request'
 
 interface Props {
     row: TableRow
@@ -24,9 +25,13 @@ const xaTable = inject('xaTable') as XaTableClass
 const cellValue = ref(getCellValue(props.row, props.field, props.column, props.index))
 const { mutate, isLoading } = useMutation({
     mutation: (vars: anyObj) => xaTable.api.edit!({ path: { [xaTable.table.pk!]: vars.id }, body: vars.body }),
-    onSuccess: (_data, vars, _context) => {
-        cellValue.value = vars.value
-        xaTable.onTableAction('field-change', { value: vars.value, ...props })
+    onSuccess: (data, vars, _context) => {
+        httpStatusHandle(data)
+        const status = (data as anyObj).status
+        if (status && typeof status === 'number' && isSuccess(status)) {
+            cellValue.value = vars.value
+            xaTable.onTableAction('field-change', { value: vars.value, ...props })
+        }
     },
     onError: (error) => {
         console.error(error)

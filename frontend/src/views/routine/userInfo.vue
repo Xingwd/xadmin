@@ -84,6 +84,7 @@ import { buildValidatorData } from '/@/utils/validate'
 import { useUserInfo } from '/@/stores/userInfo'
 import { usersReadUserMe, usersReadUserOperationLogs, usersUpdateUserMe } from '/@/client'
 import { useMutation, useQuery } from '@pinia/colada'
+import { httpStatusHandle, isSuccess } from '/@/utils/request'
 
 defineOptions({
     name: 'routine/userInfo',
@@ -120,8 +121,12 @@ const rules: Partial<Record<string, FormItemRule[]>> = reactive({
 
 const { mutate: updateUserMeMutate, isLoading: updateUserMeLoading } = useMutation({
     mutation: () => usersUpdateUserMe({ body: { full_name: state.userInfo.full_name, password: state.userInfo.password } }),
-    onSuccess: () => {
-        userInfo.dataFill({ ...userInfo.$state, full_name: state.userInfo.full_name })
+    onSuccess: (data, _vars, _context) => {
+        httpStatusHandle(data)
+        const status = (data as anyObj).status
+        if (status && typeof status === 'number' && isSuccess(status)) {
+            userInfo.dataFill({ ...userInfo.$state, full_name: state.userInfo.full_name })
+        }
     },
     onError: (error) => {
         console.error(error)

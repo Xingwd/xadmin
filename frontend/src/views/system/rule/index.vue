@@ -95,6 +95,9 @@ const xaTable = new XaTableClass(
         index: () => {
             xaTable.table.expandAll = xaTable.table.query?.quick_search ? true : false
         },
+        onTableDblclick: (): boolean => {
+            return xaTable.auth('edit')
+        },
     }
 )
 

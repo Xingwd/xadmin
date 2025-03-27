@@ -1,7 +1,7 @@
 import { nextTick } from 'vue'
 import { loadCss, loadJs } from './common'
 import * as elIcons from '@element-plus/icons-vue'
-import { getUrl } from '/@/utils/query'
+import { getUrl } from '/@/utils/request'
 
 /**
  * 动态加载的 css 和 js

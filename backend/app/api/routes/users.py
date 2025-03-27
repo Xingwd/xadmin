@@ -149,7 +149,7 @@ def delete_user_me(
     return Message(message="User deleted successfully")
 
 
-@router.post("/signup", response_model=Message)
+@router.post("/signup", response_model=Message, status_code=201)
 def register_user(session: SessionDep, user_in: UserRegister) -> Message:
     """
     Create new user without the need to be logged in.
@@ -191,6 +191,7 @@ def read_user_by_id(id: int, session: SessionDep) -> UserPublic:
         Security(get_current_user, scopes=[ApiPermissions.USERS.value.create.name])
     ],
     response_model=Message,
+    status_code=201,
 )
 def create_user(*, session: SessionDep, user_in: UserCreate) -> Message:
     """
