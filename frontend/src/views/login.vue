@@ -119,12 +119,12 @@ const focusInput = () => {
 
 const { loginMutation } = useAuth()
 
-onMounted(() => {
+onMounted(async () => {
     timer = window.setTimeout(() => {
         pageBubble.init()
     }, 1000)
 
-    if (isLoggedIn()) {
+    if (await isLoggedIn()) {
         router.push({ name: '/' })
     } else {
         nextTick(() => focusInput())
