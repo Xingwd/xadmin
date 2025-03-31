@@ -38,8 +38,8 @@ const state = reactive({
     autoMenuCollapseLock: false,
 })
 
-onMounted(() => {
-    if (!isLoggedIn()) return router.push({ name: 'login' })
+onMounted(async () => {
+    if (!(await isLoggedIn())) return router.push({ name: 'login' })
     init()
     setNavTabsWidth()
     useEventListener(window, 'resize', setNavTabsWidth)

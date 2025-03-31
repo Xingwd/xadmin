@@ -3,11 +3,13 @@ import router from '/@/router'
 import { BodyLoginAccessToken, loginAccessToken, loginTestToken } from '/@/client'
 import { Local } from '/@/utils/storage'
 import { ACCESS_TOKEN } from '/@/stores/constant/cacheKey'
+import { isSuccess } from '/@/utils/request'
 
-const isLoggedIn = () => {
+const isLoggedIn = async () => {
     if (Local.get(ACCESS_TOKEN) !== null) {
-        loginTestToken().then((res) => {
-            if (res.status !== 200) {
+        await loginTestToken().then((res) => {
+            const status = res.status
+            if (status && typeof status === 'number' && !isSuccess(status)) {
                 Local.remove(ACCESS_TOKEN)
             }
         })
