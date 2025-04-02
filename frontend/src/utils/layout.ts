@@ -9,7 +9,7 @@ import { useConfig } from '/@/stores/config'
  */
 export function mainHeight(extra = 0): CSSProperties {
     let height = extra
-    const adminLayoutMainExtraHeight: anyObj = {
+    const layoutMainExtraHeight: anyObj = {
         Default: 70,
         Classic: 50,
         Streamline: 60,
@@ -17,7 +17,7 @@ export function mainHeight(extra = 0): CSSProperties {
     const config = useConfig()
     const navTabs = useNavTabs()
     if (!navTabs.state.tabFullScreen) {
-        height += adminLayoutMainExtraHeight[config.layout.layoutMode]
+        height += layoutMainExtraHeight[config.layout.layoutMode]
     }
     return {
         height: 'calc(100vh - ' + height.toString() + 'px)',

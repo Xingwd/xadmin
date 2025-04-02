@@ -29,7 +29,7 @@ const staticRoutes: Array<RouteRecordRaw> = [
         ],
     },
     {
-        // 管理员登录页 - 不放在 adminBaseRoute.children 因为登录页不需要使用后台的布局
+        // 管理员登录页
         path: '/login',
         name: 'login',
         component: () => import('/@/views/login.vue'),
