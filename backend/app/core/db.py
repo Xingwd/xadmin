@@ -52,7 +52,7 @@ def init_rule(session: Session) -> None:
     home_in = Rule(
         type=RuleType.menu_item,
         title="主页",
-        name=ApiPermissions.USERS_HOME.value.resource,
+        name=ApiPermissions.V1_USERS_HOME.value.path,
         path=home_path,
         icon="el-icon-HomeFilled",
         menu_item_type=MenuItemType.tab,
@@ -64,7 +64,7 @@ def init_rule(session: Session) -> None:
             Rule(
                 type=RuleType.permission,
                 title="查看",
-                name=ApiPermissions.USERS_HOME.value.read.name,
+                name=ApiPermissions.V1_USERS_HOME.value.read.name,
             ),
         ],
     )
@@ -81,7 +81,7 @@ def init_rule(session: Session) -> None:
             Rule(
                 type=RuleType.menu_item,
                 title="个人信息",
-                name=ApiPermissions.USERS_ME.value.resource,
+                name=ApiPermissions.V1_USERS_ME.value.path,
                 path="routine/user-info",
                 icon="el-icon-UserFilled",
                 menu_item_type=MenuItemType.tab,
@@ -91,17 +91,17 @@ def init_rule(session: Session) -> None:
                     Rule(
                         type=RuleType.permission,
                         title="查看",
-                        name=ApiPermissions.USERS_ME.value.read.name,
+                        name=ApiPermissions.V1_USERS_ME.value.read.name,
                     ),
                     Rule(
                         type=RuleType.permission,
                         title="编辑",
-                        name=ApiPermissions.USERS_ME.value.update.name,
+                        name=ApiPermissions.V1_USERS_ME.value.update.name,
                     ),
                     Rule(
                         type=RuleType.permission,
                         title="删除",
-                        name=ApiPermissions.USERS_ME.value.delete.name,
+                        name=ApiPermissions.V1_USERS_ME.value.delete.name,
                     ),
                 ],
             )
@@ -120,7 +120,7 @@ def init_rule(session: Session) -> None:
             Rule(
                 type=RuleType.menu_item,
                 title="规则管理",
-                name=ApiPermissions.RULES.value.resource,
+                name=ApiPermissions.V1_RULES.value.path,
                 path="system/rules",
                 icon="el-icon-Grid",
                 menu_item_type=MenuItemType.tab,
@@ -130,29 +130,29 @@ def init_rule(session: Session) -> None:
                     Rule(
                         type=RuleType.permission,
                         title="查看",
-                        name=ApiPermissions.RULES.value.read.name,
+                        name=ApiPermissions.V1_RULES.value.read.name,
                     ),
                     Rule(
                         type=RuleType.permission,
                         title="添加",
-                        name=ApiPermissions.RULES.value.create.name,
+                        name=ApiPermissions.V1_RULES.value.create.name,
                     ),
                     Rule(
                         type=RuleType.permission,
                         title="编辑",
-                        name=ApiPermissions.RULES.value.update.name,
+                        name=ApiPermissions.V1_RULES.value.update.name,
                     ),
                     Rule(
                         type=RuleType.permission,
                         title="删除",
-                        name=ApiPermissions.RULES.value.delete.name,
+                        name=ApiPermissions.V1_RULES.value.delete.name,
                     ),
                 ],
             ),
             Rule(
                 type=RuleType.menu_item,
                 title="角色管理",
-                name=ApiPermissions.ROLES.value.resource,
+                name=ApiPermissions.V1_ROLES.value.path,
                 path="system/roles",
                 icon="fa fa-group",
                 menu_item_type=MenuItemType.tab,
@@ -162,29 +162,29 @@ def init_rule(session: Session) -> None:
                     Rule(
                         type=RuleType.permission,
                         title="查看",
-                        name=ApiPermissions.ROLES.value.read.name,
+                        name=ApiPermissions.V1_ROLES.value.read.name,
                     ),
                     Rule(
                         type=RuleType.permission,
                         title="添加",
-                        name=ApiPermissions.ROLES.value.create.name,
+                        name=ApiPermissions.V1_ROLES.value.create.name,
                     ),
                     Rule(
                         type=RuleType.permission,
                         title="编辑",
-                        name=ApiPermissions.ROLES.value.update.name,
+                        name=ApiPermissions.V1_ROLES.value.update.name,
                     ),
                     Rule(
                         type=RuleType.permission,
                         title="删除",
-                        name=ApiPermissions.ROLES.value.delete.name,
+                        name=ApiPermissions.V1_ROLES.value.delete.name,
                     ),
                 ],
             ),
             Rule(
                 type=RuleType.menu_item,
                 title="用户管理",
-                name=ApiPermissions.USERS.value.resource,
+                name=ApiPermissions.V1_USERS.value.path,
                 path="system/users",
                 icon="el-icon-UserFilled",
                 menu_item_type=MenuItemType.tab,
@@ -194,29 +194,29 @@ def init_rule(session: Session) -> None:
                     Rule(
                         type=RuleType.permission,
                         title="查看",
-                        name=ApiPermissions.USERS.value.read.name,
+                        name=ApiPermissions.V1_USERS.value.read.name,
                     ),
                     Rule(
                         type=RuleType.permission,
                         title="添加",
-                        name=ApiPermissions.USERS.value.create.name,
+                        name=ApiPermissions.V1_USERS.value.create.name,
                     ),
                     Rule(
                         type=RuleType.permission,
                         title="编辑",
-                        name=ApiPermissions.USERS.value.update.name,
+                        name=ApiPermissions.V1_USERS.value.update.name,
                     ),
                     Rule(
                         type=RuleType.permission,
                         title="删除",
-                        name=ApiPermissions.USERS.value.delete.name,
+                        name=ApiPermissions.V1_USERS.value.delete.name,
                     ),
                 ],
             ),
             Rule(
                 type=RuleType.menu_item,
                 title="操作日志",
-                name=ApiPermissions.OPERATION_LOGS.value.resource,
+                name=ApiPermissions.V1_OPERATION_LOGS.value.path,
                 path="system/operation-logs",
                 icon="el-icon-List",
                 menu_item_type=MenuItemType.tab,
@@ -226,12 +226,12 @@ def init_rule(session: Session) -> None:
                     Rule(
                         type=RuleType.permission,
                         title="查看",
-                        name=ApiPermissions.OPERATION_LOGS.value.read.name,
+                        name=ApiPermissions.V1_OPERATION_LOGS.value.read.name,
                     ),
                     Rule(
                         type=RuleType.permission,
                         title="删除",
-                        name=ApiPermissions.OPERATION_LOGS.value.delete.name,
+                        name=ApiPermissions.V1_OPERATION_LOGS.value.delete.name,
                     ),
                 ],
             ),

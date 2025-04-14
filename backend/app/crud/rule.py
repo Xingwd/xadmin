@@ -35,7 +35,12 @@ def delete_rule(*, session: Session, rule: Rule) -> None:
     session.commit()
 
 
-def get_rules(
+def get_rules(*, session: Session) -> list[Rule]:
+    rules = session.exec(select(Rule)).all()
+    return rules
+
+
+def get_rule_trees(
     *, session: Session, only_menus: bool = False, quick_search: str = None
 ) -> RuleTreesPublic:
     data = []

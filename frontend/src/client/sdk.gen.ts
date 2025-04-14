@@ -245,7 +245,7 @@ export const usersReadUserMe = <ThrowOnError extends boolean = false>(options?: 
  * Update own user.
  */
 export const usersUpdateUserMe = <ThrowOnError extends boolean = false>(options: Options<UsersUpdateUserMeData, ThrowOnError>) => {
-    return (options.client ?? _heyApiClient).put<UsersUpdateUserMeResponse, UsersUpdateUserMeError, ThrowOnError>({
+    return (options.client ?? _heyApiClient).patch<UsersUpdateUserMeResponse, UsersUpdateUserMeError, ThrowOnError>({
         security: [
             {
                 scheme: 'bearer',

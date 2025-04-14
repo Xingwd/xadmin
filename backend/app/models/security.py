@@ -21,51 +21,42 @@ class Permission(SQLModel):
 
 
 class Operation(Enum):
-    CREATE = "c"
-    READ = "r"
-    UPDATE = "u"
-    DELETE = "d"
+    CREATE = "create"
+    READ = "read"
+    UPDATE = "update"
+    DELETE = "delete"
 
 
 class ApiPermission(SQLModel):
     path: str
-    description: str
-
-    @property
-    def resource(self) -> str:
-        if self.path.startswith("/"):
-            self.path = self.path[1:]
-        if self.path.endswith("/"):
-            self.path = self.path[:-1]
-        return self.path.replace("/", ":")
 
     @property
     def create(self) -> Permission:
         return Permission(
             name=self._build_permission(Operation.CREATE),
-            description=f"Create on {self.description}",
+            description=f"Create on {self.path}",
         )
 
     @property
     def read(self) -> Permission:
         return Permission(
             name=self._build_permission(Operation.READ),
-            description=f"Read on {self.description}",
+            description=f"Read on {self.path}",
         )
 
     @property
     def update(self) -> Permission:
         return Permission(
             name=self._build_permission(Operation.UPDATE),
-            description=f"Update on {self.description}",
+            description=f"Update on {self.path}",
         )
 
     @property
     def delete(self) -> Permission:
         return Permission(
             name=self._build_permission(Operation.DELETE),
-            description=f"Delete on {self.description}",
+            description=f"Delete on {self.path}",
         )
 
     def _build_permission(self, operation: Operation) -> str:
-        return f"{self.resource}:{operation.value}"
+        return f"{self.path}:{operation.value}"

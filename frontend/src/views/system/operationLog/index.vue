@@ -83,8 +83,8 @@ const xaTable = new XaTableClass(
                 width: '100',
                 operator: 'eq',
                 render: 'tag',
-                custom: { GET: 'primary', POST: 'success', PUT: 'warning', DELETE: 'danger' },
-                replaceValue: { GET: 'GET', POST: 'POST', PUT: 'PUT', DELETE: 'DELETE' },
+                custom: { GET: 'primary', POST: 'success', PUT: 'warning', PATCH: 'warning', DELETE: 'danger' },
+                replaceValue: { GET: 'GET', POST: 'POST', PUT: 'PUT', PATCH: 'PATCH', DELETE: 'DELETE' },
             },
             {
                 label: t('system.operationLogs.Request Path'),

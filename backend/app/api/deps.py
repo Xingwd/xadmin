@@ -62,7 +62,7 @@ def get_current_user(
                     detail="Not enough permissions",
                     headers={"WWW-Authenticate": authenticate_value},
                 )
-    # 提供给中间件使用
+    # 提供给下游使用
     request.state.user = user
     request.state.scopes = security_scopes.scopes
     return user

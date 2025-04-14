@@ -25,7 +25,7 @@ router = APIRouter()
     "/",
     dependencies=[
         Security(
-            get_current_user, scopes=[ApiPermissions.OPERATION_LOGS.value.read.name]
+            get_current_user, scopes=[ApiPermissions.V1_OPERATION_LOGS.value.read.name]
         )
     ],
     response_model=OperationLogsPublic,
@@ -65,7 +65,7 @@ async def submit_operation_log(rule_name: str) -> Message:
     "/{id}",
     dependencies=[
         Security(
-            get_current_user, scopes=[ApiPermissions.OPERATION_LOGS.value.read.name]
+            get_current_user, scopes=[ApiPermissions.V1_OPERATION_LOGS.value.read.name]
         )
     ],
     response_model=OperationLogPublic,
@@ -85,7 +85,7 @@ def read_operation_log_by_id(id: uuid.UUID, session: SessionDep) -> OperationLog
     dependencies=[
         Security(
             get_current_user,
-            scopes=[ApiPermissions.OPERATION_LOGS.value.delete.name],
+            scopes=[ApiPermissions.V1_OPERATION_LOGS.value.delete.name],
         )
     ],
     response_model=Message,

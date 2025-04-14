@@ -176,16 +176,16 @@ const assembleAuthNode = (routes: any, authNode: Map<string, string[]>, parentNa
     for (const key in routes) {
         if (routes[key].type == 'permission') {
             switch (routes[key].name.replace(parentName + ':', '')) {
-                case 'c':
+                case 'create':
                     authNodeTemp.push('add')
                     break
-                case 'r':
+                case 'read':
                     authNodeTemp.push('index')
                     break
-                case 'u':
+                case 'update':
                     authNodeTemp.push('edit')
                     break
-                case 'd':
+                case 'delete':
                     authNodeTemp.push('del')
                     break
             }
