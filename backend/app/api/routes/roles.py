@@ -12,7 +12,7 @@ router = APIRouter()
 @router.get(
     "/",
     dependencies=[
-        Security(get_current_user, scopes=[ApiPermissions.ROLES.value.read.name])
+        Security(get_current_user, scopes=[ApiPermissions.V1_ROLES.value.read.name])
     ],
     response_model=RolesPublic,
 )
@@ -30,7 +30,7 @@ def read_roles(
 @router.get(
     "/{id}",
     dependencies=[
-        Security(get_current_user, scopes=[ApiPermissions.ROLES.value.read.name])
+        Security(get_current_user, scopes=[ApiPermissions.V1_ROLES.value.read.name])
     ],
     response_model=RolePublic,
 )
@@ -47,7 +47,7 @@ def read_role(session: SessionDep, id: int) -> RolePublic:
 @router.post(
     "/",
     dependencies=[
-        Security(get_current_user, scopes=[ApiPermissions.ROLES.value.create.name])
+        Security(get_current_user, scopes=[ApiPermissions.V1_ROLES.value.create.name])
     ],
     response_model=Message,
     status_code=201,
@@ -66,7 +66,7 @@ def create_role(*, session: SessionDep, role_in: RoleCreate) -> Message:
 @router.put(
     "/{id}",
     dependencies=[
-        Security(get_current_user, scopes=[ApiPermissions.ROLES.value.update.name])
+        Security(get_current_user, scopes=[ApiPermissions.V1_ROLES.value.update.name])
     ],
     response_model=Message,
 )
@@ -96,7 +96,7 @@ def update_role(
 @router.delete(
     "/{id}",
     dependencies=[
-        Security(get_current_user, scopes=[ApiPermissions.ROLES.value.delete.name])
+        Security(get_current_user, scopes=[ApiPermissions.V1_ROLES.value.delete.name])
     ],
     response_model=Message,
 )

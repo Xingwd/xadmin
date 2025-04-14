@@ -29,7 +29,7 @@ const staticRoutes: Array<RouteRecordRaw> = [
         ],
     },
     {
-        // 管理员登录页
+        // 登录页
         path: '/login',
         name: 'login',
         component: () => import('/@/views/login.vue'),
@@ -38,7 +38,7 @@ const staticRoutes: Array<RouteRecordRaw> = [
         },
     },
     {
-        // 后台找不到页面了-可能是路由未加载上
+        // 找不到页面了-可能是路由未加载上
         path: '/:path(.*)*',
         // redirect: '/404',
         redirect: (to) => {

@@ -366,7 +366,7 @@ export type UsersCreateUserResponses = {
     /**
      * Successful Response
      */
-    200: Message
+    201: Message
 }
 
 export type UsersCreateUserResponse = UsersCreateUserResponses[keyof UsersCreateUserResponses]
@@ -492,7 +492,7 @@ export type UsersRegisterUserResponses = {
     /**
      * Successful Response
      */
-    200: Message
+    201: Message
 }
 
 export type UsersRegisterUserResponse = UsersRegisterUserResponses[keyof UsersRegisterUserResponses]
@@ -632,7 +632,7 @@ export type RulesCreateRuleResponses = {
     /**
      * Successful Response
      */
-    200: Message
+    201: Message
 }
 
 export type RulesCreateRuleResponse = RulesCreateRuleResponses[keyof RulesCreateRuleResponses]
@@ -798,7 +798,7 @@ export type RolesCreateRoleResponses = {
     /**
      * Successful Response
      */
-    200: Message
+    201: Message
 }
 
 export type RolesCreateRoleResponse = RolesCreateRoleResponses[keyof RolesCreateRoleResponses]

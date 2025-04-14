@@ -1,9 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlmodel import Field, SQLModel
-
-from .common import TableRecordCreatedDateTime
+from sqlmodel import Field, SQLModel, text
 
 
 class OperationLogBase(SQLModel):
@@ -23,7 +21,11 @@ class OperationLogCreate(OperationLogBase):
 
 class OperationLog(OperationLogBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    created_at: TableRecordCreatedDateTime
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(),
+        sa_column_kwargs={"server_default": text("CURRENT_TIMESTAMP")},
+        index=True,
+    )
 
 
 class OperationLogPublic(OperationLogBase):

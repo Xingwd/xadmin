@@ -40,15 +40,15 @@ def decode_token(token: str) -> dict:
 # API权限
 class ApiPermissions(Enum):
     # rules
-    RULES = ApiPermission(path="rules", description="Rules")
+    V1_RULES = ApiPermission(path=f"{settings.API_V1_STR}/rules/")
     # roles
-    ROLES = ApiPermission(path="roles", description="Roles")
+    V1_ROLES = ApiPermission(path=f"{settings.API_V1_STR}/roles/")
     # users
-    USERS = ApiPermission(path="users", description="Users")
-    USERS_ME = ApiPermission(path="users/me", description="Users Me")
-    USERS_HOME = ApiPermission(path="users/home", description="Users Home")
+    V1_USERS = ApiPermission(path=f"{settings.API_V1_STR}/users/")
+    V1_USERS_ME = ApiPermission(path=f"{settings.API_V1_STR}/users/me")
+    V1_USERS_HOME = ApiPermission(path=f"{settings.API_V1_STR}/users/home")
     # operation-logs
-    OPERATION_LOGS = ApiPermission(path="operation-logs", description="Operation Logs")
+    V1_OPERATION_LOGS = ApiPermission(path=f"{settings.API_V1_STR}/operation-logs/")
 
 
 # OAuth2 作用域

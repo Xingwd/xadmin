@@ -96,7 +96,7 @@ root@7f2607af31c3:/app# fastapi run --reload app/main.py
 定义好权限后，即可通过 `Security scopes` 使用权限，示例：
 
 ```python
-Security(get_current_user, scopes=[ApiPermissions.RULES.value.read.name])
+Security(get_current_user, scopes=[ApiPermissions.V1_RULES.value.read.name])
 ```
 
 ## 后端测试

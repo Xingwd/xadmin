@@ -31,7 +31,7 @@ router = APIRouter()
 @router.get(
     "/",
     dependencies=[
-        Security(get_current_user, scopes=[ApiPermissions.USERS.value.read.name])
+        Security(get_current_user, scopes=[ApiPermissions.V1_USERS.value.read.name])
     ],
     response_model=UsersPublic,
 )
@@ -62,7 +62,7 @@ def read_users(
 def read_user_home(
     session: SessionDep,
     current_user: User = Security(
-        get_current_user, scopes=[ApiPermissions.USERS_HOME.value.read.name]
+        get_current_user, scopes=[ApiPermissions.V1_USERS_HOME.value.read.name]
     ),
 ) -> UserHome:
     """
@@ -76,7 +76,7 @@ def read_user_home(
 def read_user_operation_logs(
     session: SessionDep,
     current_user: User = Security(
-        get_current_user, scopes=[ApiPermissions.USERS_ME.value.read.name]
+        get_current_user, scopes=[ApiPermissions.V1_USERS_ME.value.read.name]
     ),
     pagination: PaginationParams = Depends(),
 ) -> OperationLogsPublic:
@@ -95,7 +95,7 @@ def read_user_operation_logs(
 def read_user_me(
     session: SessionDep,
     current_user: User = Security(
-        get_current_user, scopes=[ApiPermissions.USERS_ME.value.read.name]
+        get_current_user, scopes=[ApiPermissions.V1_USERS_ME.value.read.name]
     ),
 ) -> UserMePublic:
     """
@@ -108,23 +108,23 @@ def read_user_me(
     return user_me
 
 
-@router.put("/me", response_model=Message)
+@router.patch("/me", response_model=Message)
 def update_user_me(
     *,
     session: SessionDep,
     user_in: UserUpdateMe,
     current_user: User = Security(
-        get_current_user, scopes=[ApiPermissions.USERS_ME.value.update.name]
+        get_current_user, scopes=[ApiPermissions.V1_USERS_ME.value.update.name]
     ),
 ) -> Message:
     """
     Update own user.
     """
     db_user = session.get(User, current_user.id)
-    crud.update_user(
+    crud.update_user_me(
         session=session,
         db_user=db_user,
-        user_update=UserUpdate(full_name=user_in.full_name, password=user_in.password),
+        user_update_me=user_in,
     )
     return Message(message="User updated successfully")
 
@@ -133,7 +133,7 @@ def update_user_me(
 def delete_user_me(
     session: SessionDep,
     current_user: User = Security(
-        get_current_user, scopes=[ApiPermissions.USERS_ME.value.delete.name]
+        get_current_user, scopes=[ApiPermissions.V1_USERS_ME.value.delete.name]
     ),
 ) -> Message:
     """
@@ -173,7 +173,7 @@ def register_user(session: SessionDep, user_in: UserRegister) -> Message:
 @router.get(
     "/{id}",
     dependencies=[
-        Security(get_current_user, scopes=[ApiPermissions.USERS.value.read.name])
+        Security(get_current_user, scopes=[ApiPermissions.V1_USERS.value.read.name])
     ],
     response_model=UserPublic,
 )
@@ -188,7 +188,7 @@ def read_user_by_id(id: int, session: SessionDep) -> UserPublic:
 @router.post(
     "/",
     dependencies=[
-        Security(get_current_user, scopes=[ApiPermissions.USERS.value.create.name])
+        Security(get_current_user, scopes=[ApiPermissions.V1_USERS.value.create.name])
     ],
     response_model=Message,
     status_code=201,
@@ -212,7 +212,7 @@ def create_user(*, session: SessionDep, user_in: UserCreate) -> Message:
 @router.put(
     "/{id}",
     dependencies=[
-        Security(get_current_user, scopes=[ApiPermissions.USERS.value.update.name])
+        Security(get_current_user, scopes=[ApiPermissions.V1_USERS.value.update.name])
     ],
     response_model=Message,
 )
@@ -253,7 +253,7 @@ def delete_user(
     session: SessionDep,
     id: int,
     current_user: User = Security(
-        get_current_user, scopes=[ApiPermissions.USERS.value.delete.name]
+        get_current_user, scopes=[ApiPermissions.V1_USERS.value.delete.name]
     ),
 ) -> Message:
     """

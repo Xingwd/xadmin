@@ -20,7 +20,7 @@ router = APIRouter()
 @router.get(
     "/",
     dependencies=[
-        Security(get_current_user, scopes=[ApiPermissions.RULES.value.read.name])
+        Security(get_current_user, scopes=[ApiPermissions.V1_RULES.value.read.name])
     ],
     response_model=RuleTreesPublic,
 )
@@ -32,7 +32,7 @@ def read_rules(
     """
     Read rules.
     """
-    rules = crud.get_rules(
+    rules = crud.get_rule_trees(
         session=session, only_menus=only_menus, quick_search=quick_search
     )
     return rules
@@ -41,7 +41,7 @@ def read_rules(
 @router.get(
     "/permissions",
     dependencies=[
-        Security(get_current_user, scopes=[ApiPermissions.RULES.value.read.name])
+        Security(get_current_user, scopes=[ApiPermissions.V1_RULES.value.read.name])
     ],
     response_model=list[Permission],
 )
@@ -70,7 +70,7 @@ def read_permissions(
 @router.get(
     "/{id}",
     dependencies=[
-        Security(get_current_user, scopes=[ApiPermissions.RULES.value.read.name])
+        Security(get_current_user, scopes=[ApiPermissions.V1_RULES.value.read.name])
     ],
     response_model=RuleTreePublic,
 )
@@ -87,7 +87,7 @@ def read_rule(session: SessionDep, id: int) -> RuleTreePublic:
 @router.post(
     "/",
     dependencies=[
-        Security(get_current_user, scopes=[ApiPermissions.RULES.value.create.name])
+        Security(get_current_user, scopes=[ApiPermissions.V1_RULES.value.create.name])
     ],
     response_model=Message,
     status_code=201,
@@ -106,7 +106,7 @@ def create_rule(*, session: SessionDep, rule_in: RuleCreate) -> Message:
 @router.put(
     "/{id}",
     dependencies=[
-        Security(get_current_user, scopes=[ApiPermissions.RULES.value.update.name])
+        Security(get_current_user, scopes=[ApiPermissions.V1_RULES.value.update.name])
     ],
     response_model=Message,
 )
@@ -136,7 +136,7 @@ def update_rule(
 @router.delete(
     "/{id}",
     dependencies=[
-        Security(get_current_user, scopes=[ApiPermissions.RULES.value.delete.name])
+        Security(get_current_user, scopes=[ApiPermissions.V1_RULES.value.delete.name])
     ],
     response_model=Message,
 )
