@@ -202,18 +202,18 @@ def get_user_logs(
 def get_user_home(*, session: Session, user_id: int) -> UserHome:
     common_where_clause = [OperationLog.user_id == user_id]
     where_clause_1w = [
-        OperationLog.created_at > date.today() - timedelta(days=7),
+        func.date(OperationLog.created_at) > date.today() - timedelta(weeks=1),
     ]
     where_clause_previous_1w = [
-        OperationLog.created_at <= date.today() - timedelta(days=7),
-        OperationLog.created_at > date.today() - timedelta(days=14),
+        func.date(OperationLog.created_at) <= date.today() - timedelta(weeks=1),
+        func.date(OperationLog.created_at) > date.today() - timedelta(weeks=2),
     ]
     where_clause_1m = [
-        OperationLog.created_at > date.today() - timedelta(days=30),
+        func.date(OperationLog.created_at) > date.today() - timedelta(days=30),
     ]
     where_clause_previous_1m = [
-        OperationLog.created_at <= date.today() - timedelta(days=30),
-        OperationLog.created_at > date.today() - timedelta(days=60),
+        func.date(OperationLog.created_at) <= date.today() - timedelta(days=30),
+        func.date(OperationLog.created_at) > date.today() - timedelta(days=60),
     ]
 
     def get_count(where_clause: list = None) -> list[int, int, int, int]:
