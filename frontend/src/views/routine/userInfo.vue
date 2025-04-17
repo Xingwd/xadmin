@@ -29,9 +29,13 @@
                                 <el-input disabled v-model="state.userInfo.username"></el-input>
                             </el-form-item>
                             <el-form-item :label="t('system.users.Full name')" prop="full_name">
-                                <el-input :placeholder="t('routine.userInfo.Please enter a full name')" v-model="state.userInfo.full_name"></el-input>
+                                <el-input
+                                    :placeholder="t('routine.userInfo.Please enter a full name')"
+                                    v-model="state.userInfo.full_name"
+                                    :disabled="!auth('edit')"
+                                ></el-input>
                             </el-form-item>
-                            <el-form-item :label="t('routine.userInfo.New password')" prop="password">
+                            <el-form-item :label="t('routine.userInfo.New password')" prop="password" v-auth="'edit'">
                                 <el-input
                                     type="password"
                                     :placeholder="t('routine.userInfo.Please leave blank if not modified')"
@@ -78,7 +82,7 @@
 import { ref, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { FormInstance, FormItemRule } from 'element-plus'
-import { fullUrl, onResetForm, timeFormat } from '/@/utils/common'
+import { fullUrl, onResetForm, timeFormat, auth } from '/@/utils/common'
 import { uuid } from '/@/utils/random'
 import { buildValidatorData } from '/@/utils/validate'
 import { useUserInfo } from '/@/stores/userInfo'
@@ -120,7 +124,10 @@ const rules: Partial<Record<string, FormItemRule[]>> = reactive({
 })
 
 const { mutate: updateUserMeMutate, isLoading: updateUserMeLoading } = useMutation({
-    mutation: () => usersUpdateUserMe({ body: { full_name: state.userInfo.full_name, password: state.userInfo.password } }),
+    mutation: () =>
+        usersUpdateUserMe({
+            body: { full_name: state.userInfo.full_name, password: state.userInfo.password === '' ? undefined : state.userInfo.password },
+        }),
     onSuccess: (data, _vars, _context) => {
         httpStatusHandle(data)
         const status = (data as anyObj).status
