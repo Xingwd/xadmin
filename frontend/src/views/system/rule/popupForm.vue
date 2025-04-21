@@ -84,7 +84,7 @@
                         <el-input
                             v-model="xaTable.form.items!.name"
                             type="string"
-                            :placeholder="t('system.rules.English name, such as system:rule')"
+                            :placeholder="t('system.rules.English name, such as system/rules')"
                         ></el-input>
                         <div class="block-help">
                             {{ t('system.rules.It will be registered as a frontend route name and used for frontend and backend authentication') }}
@@ -94,7 +94,7 @@
                         <el-input
                             v-model="xaTable.form.items!.path"
                             type="string"
-                            :placeholder="t('system.rules.The frontend routing path (path) does not need to start with `/`, such as system/rule')"
+                            :placeholder="t('system.rules.The frontend routing path (path) does not need to start with `/`, such as system/rules')"
                         ></el-input>
                     </el-form-item>
                     <FormItem

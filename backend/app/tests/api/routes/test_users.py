@@ -22,7 +22,10 @@ def test_get_users_superuser_me(
 
 def test_get_users_normal_user_me(db: Session, client: TestClient) -> None:
     headers = authentication_token_from_username(
-        client=client, username=settings.TEST_USER, permissions=["users:me:r"], db=db
+        client=client,
+        username=settings.TEST_USER,
+        permissions=[f"{settings.API_V1_STR}/users/me:read"],
+        db=db,
     )
     r = client.get(f"{settings.API_V1_STR}/users/me", headers=headers)
     current_user = r.json()
@@ -139,9 +142,12 @@ def test_update_user_me(client: TestClient, db: Session) -> None:
     username = random_lower_string()
     data = {"full_name": full_name, "username": username}
     headers = authentication_token_from_username(
-        client=client, username=username, permissions=["users:me:u"], db=db
+        client=client,
+        username=username,
+        permissions=[f"{settings.API_V1_STR}/users/me:update"],
+        db=db,
     )
-    r = client.put(
+    r = client.patch(
         f"{settings.API_V1_STR}/users/me",
         headers=headers,
         json=data,
@@ -171,7 +177,7 @@ def test_register_user(client: TestClient, db: Session) -> None:
 
     settings.OPEN_REGISTRATION = False
 
-    assert r.status_code == 200
+    assert r.status_code == 201
     msg = r.json()
     assert msg["message"] == "User registered successfully"
 
@@ -288,7 +294,10 @@ def test_delete_user_me(client: TestClient, db: Session) -> None:
     user_id = user.id
 
     headers = authentication_token_from_username(
-        client=client, username=username, permissions=["users:me:d"], db=db
+        client=client,
+        username=username,
+        permissions=[f"{settings.API_V1_STR}/users/me:delete"],
+        db=db,
     )
     r = client.delete(
         f"{settings.API_V1_STR}/users/me",

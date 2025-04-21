@@ -31,7 +31,7 @@ def access_token(
         raise HTTPException(status_code=400, detail="Incorrect username or password")
     elif not user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
-    permissions = list(get_user_permissions(user))
+    permissions = list(get_user_permissions(session=session, user=user))
     token = Token(
         access_token=security.create_access_token(user.id, scopes=permissions)
     )

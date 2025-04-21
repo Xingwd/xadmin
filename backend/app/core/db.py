@@ -2,7 +2,6 @@ from sqlmodel import Session, create_engine, select
 
 from app.core.config import settings
 from app.core.security import ApiPermissions
-from app.crud import user as crud_user
 from app.models.rule import MenuItemType, Rule, RuleType
 from app.models.user import User, UserCreate
 
@@ -23,6 +22,9 @@ def init_db(session: Session) -> None:
     # from app.core.engine import engine
     # This works because the models are already imported and registered from app.models
     # SQLModel.metadata.create_all(engine)
+
+    # app.crud.user 也依赖于 app.core.db，为了避免循环导入，在这个位置导入app.crud.user
+    from app.crud import user as crud_user
 
     user = session.exec(
         select(User).where(User.username == settings.FIRST_SUPERUSER)

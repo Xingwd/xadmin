@@ -21,11 +21,11 @@ export default {
     'It will be registered as a frontend route name and used for frontend and backend authentication':
         'It will be registered as a frontend route name and used for frontend and backend authentication.',
     'Please enter the URL address of the link or iframe': 'Please enter the URL address of the link or iframe.',
-    'English name, such as system:rule': 'English name, such as system:rule.',
+    'English name, such as system/rules': 'English name, such as system/rules.',
     'Frontend component path, please start with /src, such as: /src/views/home':
         'Frontend component path, please start with /src, such as: /src/views/home.',
-    'The frontend routing path (path) does not need to start with `/`, such as system/rule':
-        'The frontend routing path (path) does not need to start with `/`, such as system/rule.',
+    'The frontend routing path (path) does not need to start with `/`, such as system/rules':
+        'The frontend routing path (path) does not need to start with `/`, such as system/rules.',
     'You can obtain this value by CurrentRoute meta remark for use, such as the banner text on the homepage':
         'You can obtain this value by CurrentRoute meta remark for use, such as the banner text on the homepage',
 }

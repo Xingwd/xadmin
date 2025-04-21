@@ -20,9 +20,9 @@ export default {
     'The superior menu rule cannot be the rule itself': '上级规则不能是规则本身',
     'It will be registered as a frontend route name and used for frontend and backend authentication': '将注册为前端路由名称，同时用作前后端鉴权',
     'Please enter the URL address of the link or iframe': '请输入链接或Iframe的URL地址',
-    'English name, such as system:rule': '英文名称，如:system:rule',
+    'English name, such as system/rules': '英文名称，如:system/rules',
     'Frontend component path, please start with /src, such as: /src/views/home': '前端组件路径，请以/src开头，如:/src/views/home.vue',
-    'The frontend routing path (path) does not need to start with `/`, such as system/rule': '前端路由路径(path)，无需以`/`开头，如:system/rule',
+    'The frontend routing path (path) does not need to start with `/`, such as system/rules': '前端路由路径(path)，无需以`/`开头，如:system/rules',
     'You can obtain this value by CurrentRoute meta remark for use, such as the banner text on the homepage':
         '你可以通过CurrentRoute meta remark获取该值进行使用，比如主页的banner文案',
 }

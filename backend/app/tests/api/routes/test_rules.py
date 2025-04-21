@@ -17,7 +17,7 @@ def test_create_rule(
         headers=superuser_token_headers,
         json=data,
     )
-    assert r.status_code == 200
+    assert r.status_code == 201
     msg = r.json()
     assert msg["message"] == "Rule created successfully"
 
