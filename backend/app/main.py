@@ -71,14 +71,13 @@ async def save_operation_log(request: Request, call_next):
             user_id, username = None, None
 
         # 获取标题
-        name, title = "", ""
+        name, title = None, None
         if path in settings.LOG_STATIC_PATHS.keys():
-            name = settings.LOG_STATIC_PATHS[path]
-            if name == "query_params.rule_name":
+            title = settings.LOG_STATIC_PATHS[path]
+            if title == "query_params.rule_name":
                 name = request.query_params.get("rule_name")
                 title = get_full_title(name)
-            else:
-                title = name
+
         else:
             scopes = getattr(request.state, "scopes", [])
             if scopes:
