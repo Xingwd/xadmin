@@ -306,9 +306,7 @@ def get_user_home(*, session: Session, user_id: int) -> UserHome:
             case(
                 (
                     func.split_part(OperationLog.name, ":", -1).in_(ops),
-                    func.substr(
-                        OperationLog.name, 1, func.length(OperationLog.name) - 2
-                    ),
+                    func.split_part(OperationLog.name, ":", 1),
                 ),
                 else_=OperationLog.name,
             ).label("menu"),

@@ -30,10 +30,12 @@
         <div class="general-panel-box">
             <el-row :gutter="20">
                 <el-col v-for="item in menus" :key="item.name" :xs="8" :sm="6" :md="6" :lg="3" class="general-panel">
-                    <el-button @click="onClickMenu(item)" plain class="general-panel-content suspension">
-                        <Icon :color="config.getColorVal('menuColor')" :name="item.meta?.icon" style="margin-right: 5px" />
-                        {{ item.meta?.title }}
-                    </el-button>
+                    <el-tooltip :content="(item.meta as anyObj).full_title" placement="top">
+                        <el-button @click="onClickMenu(item)" plain class="general-panel-content suspension">
+                            <Icon :color="config.getColorVal('menuColor')" :name="item.meta?.icon" style="margin-right: 5px" />
+                            {{ item.meta?.title }}
+                        </el-button>
+                    </el-tooltip>
                 </el-col>
             </el-row>
         </div>
@@ -238,11 +240,12 @@ const homeData = computed(() => {
     }
 })
 
-const buildRouteMap = (routes: RouteRecordRaw[], routeMap: Map<string, any> = new Map()) => {
+const buildRouteMap = (routes: RouteRecordRaw[], title_prefix: string | undefined = undefined, routeMap: Map<string, any> = new Map()) => {
     routes.forEach((item: any) => {
+        item.meta!.full_title = title_prefix ? title_prefix + ' / ' + item.meta.title : item.meta.title
         routeMap.set(item.name, item)
         if (item.children && item.children.length) {
-            buildRouteMap(item.children, routeMap)
+            buildRouteMap(item.children, item.meta.full_title, routeMap)
         }
     })
     return routeMap
