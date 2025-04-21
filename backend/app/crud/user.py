@@ -1,12 +1,12 @@
 from datetime import date, datetime, timedelta
 from typing import Any
 
-from sqlmodel import Session, and_, func, select
-from sqlmodel.sql.expression import case
+from sqlmodel import Session, and_, case, func, select
 
 from app.core.config import settings
-from app.core.security import get_password_hash
+from app.core.security import get_password_hash, oauth2_scopes
 from app.crud.common import handle_search_params
+from app.crud.rule import get_rules
 from app.models.operation_log import OperationLog, OperationLogsPublic
 from app.models.query import (
     CommonSearchParam,
@@ -16,7 +16,6 @@ from app.models.query import (
 )
 from app.models.role import Role
 from app.models.rule import Rule, UserRuleTreePublic
-from app.models.security import Operation
 from app.models.user import (
     User,
     UserBehaviorCount,
@@ -131,18 +130,24 @@ def get_users(
     return UsersPublic(data=users, total=total)
 
 
-def get_user_permissions(user: User) -> set[str]:
+def get_user_permissions(*, session: Session, user: User) -> set[str]:
     permissions = set()
-    for role in user.roles:
-        for permission in role.permissions:
-            permissions.add(permission.name)
+    if user.is_superuser:
+        for rule in get_rules(session=session):
+            permissions.add(rule.name)
+    else:
+        for role in user.roles:
+            for permission in role.permissions:
+                permissions.add(permission.name)
     return permissions
 
 
 def get_user_rules(*, session: Session, user: User) -> list[UserRuleTreePublic]:
     where_clause = [Rule.status.is_(True)]
     if not user.is_superuser:
-        where_clause.append(Rule.name.in_(get_user_permissions(user)))
+        where_clause.append(
+            Rule.name.in_(get_user_permissions(session=session, user=user))
+        )
     statement = select(Rule).where(*where_clause)
     rules = session.exec(statement).all()
     # 构建规则字典，每个规则对象排除children属性
@@ -199,8 +204,8 @@ def get_user_logs(
     return OperationLogsPublic(data=logs, total=count)
 
 
-def get_user_home(*, session: Session, user_id: int) -> UserHome:
-    common_where_clause = [OperationLog.user_id == user_id]
+def get_user_home(*, session: Session, user: User) -> UserHome:
+    common_where_clause = [OperationLog.user_id == user.id]
     where_clause_1w = [
         func.date(OperationLog.created_at) > date.today() - timedelta(weeks=1),
     ]
@@ -292,20 +297,17 @@ def get_user_home(*, session: Session, user_id: int) -> UserHome:
     behavior_1w = build_behavior_data(logins_1w_detail, operations_1w_detail)
     behavior_1m = build_behavior_data(logins_1m_detail, operations_1m_detail, days=30)
 
-    ops = [op.value for op in Operation]
-    exclude_where_clause = []
-    for method, path in settings.USER_HOME_FEATURES_EXCLUDE_PATHS:
-        exclude_where_clause.append(
-            ~and_(
-                OperationLog.request_method == method,
-                OperationLog.request_path == path,
-            )
-        )
+    menus_where_clause = [
+        OperationLog.name.in_(get_user_permissions(session=session, user=user)),
+        OperationLog.response_status_code >= 200,
+        OperationLog.response_status_code < 300,
+        OperationLog.request_path.not_in(settings.USER_HOME_FEATURES_EXCLUDE_PATHS),
+    ]
     menus_statement = (
         select(
             case(
                 (
-                    func.split_part(OperationLog.name, ":", -1).in_(ops),
+                    OperationLog.name.in_(oauth2_scopes.keys()),
                     func.split_part(OperationLog.name, ":", 1),
                 ),
                 else_=OperationLog.name,
@@ -315,7 +317,7 @@ def get_user_home(*, session: Session, user_id: int) -> UserHome:
         .where(
             *common_where_clause,
             *where_clause_1m,
-            *exclude_where_clause,
+            *menus_where_clause,
         )
         .group_by("menu")
         .order_by(func.count().desc())

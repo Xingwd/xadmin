@@ -68,7 +68,7 @@ def read_user_home(
     """
     Read current user home data.
     """
-    user_home = crud.get_user_home(session=session, user_id=current_user.id)
+    user_home = crud.get_user_home(session=session, user=current_user)
     return user_home
 
 

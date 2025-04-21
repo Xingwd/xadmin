@@ -172,7 +172,7 @@ const onFullScreen = () => {
 
 const onUserInfo = () => {
     state.showUserInfoPopover = false
-    routePush({ name: 'users:me' })
+    routePush({ path: '/routine/user-info' })
 }
 
 const onLogout = () => {

@@ -83,12 +83,12 @@ class Settings(BaseSettings):
         f"{API_V1_STR}/login/test-token": "测试Token",
         f"{API_V1_STR}/operation-logs/submit": "query_params.rule_name",
     }
-    USER_HOME_FEATURES_EXCLUDE_PATHS: list[tuple[str, str]] = [
-        ("POST", f"{API_V1_STR}/login/access-token"),
-        ("POST", f"{API_V1_STR}/login/test-token"),
-        ("GET", f"{API_V1_STR}/users/me"),
-        ("GET", f"{API_V1_STR}/users/home"),
-        ("GET", f"{API_V1_STR}/users/operation-logs"),
+    USER_HOME_FEATURES_EXCLUDE_PATHS: list[str] = [
+        f"{API_V1_STR}/login/access-token",
+        f"{API_V1_STR}/login/test-token",
+        f"{API_V1_STR}/users/home",
+        f"{API_V1_STR}/users/me",
+        f"{API_V1_STR}/users/operation-logs",
     ]
 
     def _check_default_secret(self, var_name: str, value: str | None) -> None:
