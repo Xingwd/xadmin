@@ -1,7 +1,7 @@
 from datetime import date, datetime, timedelta
 from typing import Any
 
-from sqlmodel import Session, and_, case, func, select
+from sqlmodel import Session, case, func, select
 
 from app.core.config import settings
 from app.core.security import get_password_hash, oauth2_scopes

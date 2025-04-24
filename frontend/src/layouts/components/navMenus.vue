@@ -101,7 +101,7 @@
                 </div>
                 <div class="user-info-footer">
                     <el-button @click="onUserInfo" type="primary" plain>{{ t('layouts.personal information') }}</el-button>
-                    <el-button @click="onLogout" type="danger" plain>{{ t('layouts.cancellation') }}</el-button>
+                    <el-button @click="onLogout" type="danger" plain>{{ t('layouts.logout') }}</el-button>
                 </div>
             </div>
         </el-popover>
