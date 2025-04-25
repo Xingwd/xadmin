@@ -15,11 +15,20 @@
                             <span @click="$router.back()">{{ $t('404.Back to previous page') }}</span>
                         </router-link>
                     </el-button>
+                    <el-button size="large" type="info">
+                        <span class="stopcode-a" @click="logout">{{ $t('layouts.logout') }}</span>
+                    </el-button>
                 </el-button-group>
             </div>
         </div>
     </div>
 </template>
+
+<script lang="ts" setup>
+import useAuth from '/@/utils/useAuth'
+
+const { logout } = useAuth()
+</script>
 
 <style scoped lang="scss">
 .page {

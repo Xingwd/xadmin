@@ -79,6 +79,8 @@ const init = () => {
                 let firstRoute = getFirstRoute(navTabs.state.tabsViewRoutes)
                 if (firstRoute) routePush(firstRoute.path)
             }
+        } else if (res.status == 401) {
+            router.push({ path: '/401' })
         }
     })
 }

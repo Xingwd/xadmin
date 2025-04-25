@@ -101,7 +101,7 @@
                 </div>
                 <div class="user-info-footer">
                     <el-button @click="onUserInfo" type="primary" plain>{{ t('layouts.personal information') }}</el-button>
-                    <el-button @click="onLogout" type="danger" plain>{{ t('layouts.logout') }}</el-button>
+                    <el-button @click="logout" type="danger" plain>{{ t('layouts.logout') }}</el-button>
                 </div>
             </div>
         </el-popover>
@@ -173,10 +173,6 @@ const onFullScreen = () => {
 const onUserInfo = () => {
     state.showUserInfoPopover = false
     routePush({ path: '/routine/user-info' })
-}
-
-const onLogout = () => {
-    logout()
 }
 </script>
 
