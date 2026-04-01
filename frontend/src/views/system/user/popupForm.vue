@@ -78,6 +78,7 @@
                         :input-attr="{
                             remoteQueryKey: 'roles',
                             remoteQuery: rolesReadRoles,
+                            initOptions: xaTable.form.items!.existingRoles,
                             multiple: true,
                             placeholder: t('Click select'),
                         }"

@@ -57,6 +57,9 @@
                             :small="config.layout.shrink"
                         />
                     </template>
+                    <template #label="{ value }">
+                        {{ state.valueLabelMap.get(value) ?? value }}
+                    </template>
                 </el-select>
             </template>
         </el-popover>
@@ -85,6 +88,7 @@ interface Props extends /* @vue-ignore */ ElSelectProps {
     remoteQueryKey: string
     remoteQuery: Function
     modelValue: valueTypes | null
+    initOptions?: anyObj[]
     tooltipParams?: anyObj
     pagination?: boolean
     paginationLayout?: string
@@ -101,6 +105,7 @@ const props = withDefaults(defineProps<Props>(), {
     remoteQueryKey: '',
     remoteQuery: () => {},
     modelValue: '',
+    initOptions: () => [],
     tooltipParams: () => {
         return {}
     },
@@ -134,6 +139,7 @@ const state: {
     params: anyObj
     keyword: string
     value: valueTypes
+    valueLabelMap: Map<string, any>
     focusStatus: boolean
 } = reactive({
     primaryKey: props.pk,
@@ -142,12 +148,13 @@ const state: {
     params: props.params,
     keyword: '',
     value: valueOnClear.value,
+    valueLabelMap: new Map(),
     focusStatus: false,
 })
 
 const { data: remoteQueryData, isLoading } = useQuery({
     key: computed(() => {
-        return [props.remoteQueryKey, state.keyword]
+        return [props.remoteQueryKey, state.keyword, state.currentPage, state.pageSize, state.params]
     }),
     query: () =>
         props.remoteQuery({
@@ -169,6 +176,9 @@ const remoteData = computed(() => {
                 opts[key][props.field] = props.labelFormatter(opts[key], key)
             }
         }
+        opts.forEach((item: anyObj) => {
+            state.valueLabelMap.set('' + item[state.primaryKey], item[props.field])
+        })
         data.options = opts
         data.total = (remoteQueryData.value as anyObj).data.total ?? 0
     }
@@ -263,6 +273,9 @@ onMounted(() => {
 
     // 初始化值
     updateValue(props.modelValue)
+    props.initOptions.forEach((item: anyObj) => {
+        state.valueLabelMap.set('' + item[state.primaryKey], item[props.field])
+    })
 
     setTimeout(() => {
         if (window?.IntersectionObserver) {

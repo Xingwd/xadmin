@@ -62,3 +62,4 @@ class RolePublic(RoleBase):
 
 class RolesPublic(SQLModel):
     data: list[RolePublic]
+    total: int

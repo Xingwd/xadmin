@@ -1,8 +1,25 @@
 from datetime import datetime
 
+from sqlalchemy import Integer
 from sqlmodel import SQLModel, or_
 
 from app.models.query import CommonSearchParam, Operator
+
+
+def _convert_value(model_class: SQLModel, field: str, value: str):
+    """根据模型字段类型转换值"""
+    column = getattr(model_class, field)
+    if isinstance(column.type, Integer):
+        return int(value)
+    return value
+
+
+def _convert_values(model_class: SQLModel, field: str, values: list[str]):
+    """根据模型字段类型转换值列表"""
+    column = getattr(model_class, field)
+    if isinstance(column.type, Integer):
+        return [int(v) for v in values]
+    return values
 
 
 def build_where_clause(
@@ -13,25 +30,41 @@ def build_where_clause(
     render: str | None = None,
 ) -> list[bool]:
     if operator == Operator.eq:
-        return [getattr(model_class, field) == value]
+        return [
+            getattr(model_class, field) == _convert_value(model_class, field, value)
+        ]
     elif operator == Operator.ne:
-        return [getattr(model_class, field) != value]
+        return [
+            getattr(model_class, field) != _convert_value(model_class, field, value)
+        ]
     elif operator == Operator.gt:
-        return [getattr(model_class, field) > value]
+        return [getattr(model_class, field) > _convert_value(model_class, field, value)]
     elif operator == Operator.egt:
-        return [getattr(model_class, field) >= value]
+        return [
+            getattr(model_class, field) >= _convert_value(model_class, field, value)
+        ]
     elif operator == Operator.lt:
-        return [getattr(model_class, field) < value]
+        return [getattr(model_class, field) < _convert_value(model_class, field, value)]
     elif operator == Operator.elt:
-        return [getattr(model_class, field) <= value]
+        return [
+            getattr(model_class, field) <= _convert_value(model_class, field, value)
+        ]
     elif operator == Operator.LIKE:
         return [getattr(model_class, field).like(f"%{value}%")]
     elif operator == Operator.NOT_LIKE:
         return [getattr(model_class, field).not_like(f"%{value}%")]
     elif operator == Operator.IN:
-        return [getattr(model_class, field).in_(value.split(","))]
+        return [
+            getattr(model_class, field).in_(
+                _convert_values(model_class, field, value.split(","))
+            )
+        ]
     elif operator == Operator.NOT_IN:
-        return [getattr(model_class, field).not_in(value.split(","))]
+        return [
+            getattr(model_class, field).not_in(
+                _convert_values(model_class, field, value.split(","))
+            )
+        ]
     elif operator in [Operator.RANGE, Operator.NOT_RANGE]:
         start, end = value.split(",")
         clause, or_clause = [], []

@@ -114,7 +114,7 @@ docker compose watch
 - 从项目顶级目录运行以下脚本：
 
 ```bash
-./scripts/generate-frontend-client.sh
+./scripts/generate-client.sh
 ```
 
 - 提交更改。

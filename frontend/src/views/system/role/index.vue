@@ -8,7 +8,7 @@
 
         <!-- 表格 -->
         <!-- 要使用`el-table`组件原有的属性，直接加在Table标签上即可 -->
-        <Table :pagination="false" />
+        <Table />
 
         <!-- 表单 -->
         <PopupForm ref="formRef" />
@@ -105,6 +105,7 @@ const xaTable = new XaTableClass(
         // 编辑请求完成后
         requestEdit: () => {
             ruleTreeUpdate()
+            xaTable.form.items!.existingUsers = cloneDeep(xaTable.form.items!.users)
             xaTable.form.items!.users = xaTable.form.items!.users.map((item: any) => item.id)
         },
     }

@@ -1,9 +1,14 @@
-from fastapi import APIRouter, HTTPException, Query, Security
+from fastapi import APIRouter, Depends, HTTPException, Query, Security
 
-from app.api.deps import SessionDep, get_current_user
+from app.api.common import check_order_params
+from app.api.deps import (
+    SessionDep,
+    get_current_user,
+)
 from app.core.security import ApiPermissions
 from app.crud import role as crud
 from app.models import Message
+from app.models.query import OrderParams, PaginationParams
 from app.models.role import Role, RoleCreate, RolePublic, RolesPublic, RoleUpdate
 
 router = APIRouter()
@@ -18,12 +23,22 @@ router = APIRouter()
 )
 def read_roles(
     session: SessionDep,
+    pagination: PaginationParams = Depends(),
+    order: OrderParams = Depends(),
     quick_search: str = Query(None, description="Quick search"),
 ) -> RolesPublic:
     """
     Read roles.
     """
-    roles = crud.get_roles(session=session, quick_search=quick_search)
+    check_order_params(Role, order, OrderParams(order_by="id"))
+
+    roles = crud.get_roles(
+        session=session,
+        pagination=pagination,
+        order=order,
+        quick_search=quick_search,
+    )
+
     return roles
 
 

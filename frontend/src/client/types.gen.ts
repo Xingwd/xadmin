@@ -79,6 +79,7 @@ export type RoleUser = {
 
 export type RolesPublic = {
     data: Array<RolePublic>
+    total: number
 }
 
 export type RuleCreate = {
@@ -756,6 +757,10 @@ export type RolesReadRolesData = {
          * Quick search
          */
         quick_search?: string
+        skip?: number
+        limit?: number
+        order_by?: string | null
+        order_direction?: OrderDirection
     }
     url: '/api/v1/roles/'
 }
