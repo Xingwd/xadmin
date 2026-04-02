@@ -1,4 +1,5 @@
 import uuid
+from collections.abc import Sequence
 from datetime import datetime
 
 from sqlmodel import Field, SQLModel, text
@@ -34,5 +35,5 @@ class OperationLogPublic(OperationLogBase):
 
 
 class OperationLogsPublic(SQLModel):
-    data: list[OperationLogPublic]
+    data: Sequence[OperationLogPublic]
     total: int

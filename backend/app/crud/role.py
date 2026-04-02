@@ -3,8 +3,8 @@ from datetime import datetime
 from sqlmodel import Session, func, select
 
 from app.crud.common import handle_search_params
-from app.models.query import OrderDirection, OrderParams, PaginationParams
-from app.models.role import Role, RoleCreate, RolesPublic, RoleUpdate
+from app.models.query import OrderDirection, PaginationParams
+from app.models.role import Role, RoleCreate, RolePublic, RolesPublic, RoleUpdate
 from app.models.rule import Rule
 from app.models.user import User
 
@@ -38,18 +38,22 @@ def update_role(*, session: Session, db_role: Role, role_update: RoleUpdate) -> 
     db_role.sqlmodel_update(role_data)
 
     # 更新权限
-    new_permissions = (
-        [session.get(Rule, id) for id in role_update.permissions]
-        if role_update.permissions
-        else []
-    )
+    new_permissions = []
+    if role_update.permissions:
+        for id in role_update.permissions:
+            rule = session.get(Rule, id)
+            if rule:
+                new_permissions.append(rule)
     if new_permissions != db_role.permissions:
         db_role.permissions = new_permissions
         db_role.updated_at = datetime.now()
     # 更新用户
-    new_users = (
-        [session.get(User, id) for id in role_update.users] if role_update.users else []
-    )
+    new_users = []
+    if role_update.users:
+        for id in role_update.users:
+            user = session.get(User, id)
+            if user:
+                new_users.append(user)
     if new_users != db_role.users:
         db_role.users = new_users
         db_role.updated_at = datetime.now()
@@ -71,7 +75,8 @@ def get_roles(
     *,
     session: Session,
     pagination: PaginationParams,
-    order: OrderParams,
+    order_by: str,
+    order_direction: OrderDirection,
     quick_search: str,
 ) -> RolesPublic:
     where_clause = handle_search_params(Role, quick_search, ["name"])
@@ -83,16 +88,18 @@ def get_roles(
         select(Role)
         .where(*where_clause)
         .order_by(
-            getattr(Role, order.order_by).desc()
-            if order.order_direction == OrderDirection.desc
-            else getattr(Role, order.order_by).asc()
+            getattr(Role, order_by).desc()
+            if order_direction == OrderDirection.desc
+            else getattr(Role, order_by).asc()
         )
         .offset((pagination.skip - 1) * pagination.limit)
         .limit(pagination.limit)
     )
     roles = session.exec(statement).all()
 
-    return RolesPublic(data=roles, total=total)
+    return RolesPublic(
+        data=[RolePublic.model_validate(role) for role in roles], total=total
+    )
 
 
 def get_role_by_name(*, session: Session, name: str) -> Role | None:

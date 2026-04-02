@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from datetime import date, datetime
 from enum import Enum
 from typing import TYPE_CHECKING, Annotated
@@ -34,7 +35,7 @@ class UserBase(SQLModel):
 # Properties to receive via API on creation
 class UserCreate(UserBase):
     password: PasswordField
-    roles: list[int] | None = Field(default=None)
+    roles: Sequence[int] | None = Field(default=None)
 
 
 class UserRegister(SQLModel):
@@ -45,7 +46,7 @@ class UserRegister(SQLModel):
 
 # Properties to receive via API on update, all are optional
 class UserUpdate(UserBase):
-    username: UsernameField | None = Field(default=None)
+    username: UsernameField | None = Field(default=None)  # type: ignore[assignment]
     password: PasswordField | None = Field(default=None)
     roles: list[int] | None = Field(default=None)
 
@@ -77,16 +78,16 @@ class UserPublic(UserBase):
     last_login_at: datetime | None = Field(default=None)
     created_at: datetime
     updated_at: datetime
-    roles: list[UserRole] | None = Field(default=None)
+    roles: Sequence[UserRole] | None = Field(default=None)
 
 
 class UsersPublic(SQLModel):
-    data: list[UserPublic]
+    data: Sequence[UserPublic]
     total: int
 
 
 class UserMePublic(UserPublic):
-    rules: list[UserRuleTreePublic] = Field(default=[])
+    rules: Sequence[UserRuleTreePublic] = Field(default=[])
 
 
 class UserBehaviorCount(SQLModel):
@@ -109,6 +110,6 @@ class UserHome(SQLModel):
     previous_operations_1w: int = Field(default=0)
     operations_1m: int = Field(default=0)
     previous_operations_1m: int = Field(default=0)
-    behavior_1w: list[UserBehaviorCount] | None = Field(default=None)
-    behavior_1m: list[UserBehaviorCount] | None = Field(default=None)
-    menus: list[UserMenuCount] | None = Field(default=None)
+    behavior_1w: Sequence[UserBehaviorCount] | None = Field(default=None)
+    behavior_1m: Sequence[UserBehaviorCount] | None = Field(default=None)
+    menus: Sequence[UserMenuCount] | None = Field(default=None)

@@ -324,7 +324,7 @@ export type UsersReadUsersData = {
         limit?: number
         order_by?: string | null
         order_direction?: OrderDirection
-        common_search?: string
+        common_search?: string | null
     }
     url: '/api/v1/users/'
 }
@@ -901,7 +901,7 @@ export type OperationLogsReadOperationLogsData = {
         limit?: number
         order_by?: string | null
         order_direction?: OrderDirection
-        common_search?: string
+        common_search?: string | null
     }
     url: '/api/v1/operation-logs/'
 }

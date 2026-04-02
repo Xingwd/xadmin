@@ -1,3 +1,5 @@
+from collections.abc import Sequence
+
 from fastapi.testclient import TestClient
 from sqlmodel import Session
 
@@ -42,7 +44,7 @@ def authentication_token_from_username(
     client: TestClient,
     username: str,
     db: Session,
-    permissions: list[str] | None = None,
+    permissions: Sequence[str] | None = None,
 ) -> dict[str, str]:
     """
     Return a valid token for the user with given email.
@@ -52,9 +54,13 @@ def authentication_token_from_username(
     if permissions is None:
         permissions = []
     rules = [
-        get_rule_by_name(session=db, name=permission) for permission in permissions
+        rule
+        for permission in permissions
+        if (rule := get_rule_by_name(session=db, name=permission)) is not None
     ]
     role = create_random_role(db, rules)
+    if role.id is None:
+        raise Exception("Role id not set")
 
     password = random_lower_string()
     user = crud.get_user_by_username(session=db, username=username)

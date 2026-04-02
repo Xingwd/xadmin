@@ -1,3 +1,5 @@
+from collections.abc import Sequence
+
 from sqlmodel import Session, func, select
 
 from app.core.db import engine
@@ -5,12 +7,12 @@ from app.crud.common import handle_search_params
 from app.models.operation_log import (
     OperationLog,
     OperationLogCreate,
+    OperationLogPublic,
     OperationLogsPublic,
 )
 from app.models.query import (
     CommonSearchParam,
     OrderDirection,
-    OrderParams,
     PaginationParams,
 )
 
@@ -33,9 +35,10 @@ def get_operation_logs(
     *,
     session: Session,
     pagination: PaginationParams,
-    order: OrderParams,
+    order_by: str,
+    order_direction: OrderDirection,
     quick_search: str,
-    common_search: list[CommonSearchParam],
+    common_search: Sequence[CommonSearchParam],
 ) -> OperationLogsPublic:
     where_clause = handle_search_params(
         OperationLog, quick_search, ["title"], common_search
@@ -50,13 +53,15 @@ def get_operation_logs(
         select(OperationLog)
         .where(*where_clause)
         .order_by(
-            getattr(OperationLog, order.order_by).desc()
-            if order.order_direction == OrderDirection.desc
-            else getattr(OperationLog, order.order_by).asc()
+            getattr(OperationLog, order_by).desc()
+            if order_direction == OrderDirection.desc
+            else getattr(OperationLog, order_by).asc()
         )
         .offset((pagination.skip - 1) * pagination.limit)
         .limit(pagination.limit)
     )
     logs = session.exec(statement).all()
 
-    return OperationLogsPublic(data=logs, total=total)
+    return OperationLogsPublic(
+        data=[OperationLogPublic.model_validate(log) for log in logs], total=total
+    )

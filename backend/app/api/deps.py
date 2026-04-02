@@ -1,5 +1,5 @@
 import json
-from collections.abc import Generator
+from collections.abc import Generator, Sequence
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, Request, status
@@ -68,7 +68,9 @@ def get_current_user(
     return user
 
 
-def build_common_search_params(common_search: str = None) -> list[CommonSearchParam]:
+def build_common_search_params(
+    common_search: str | None = None,
+) -> Sequence[CommonSearchParam]:
     return (
         [CommonSearchParam(**item) for item in json.loads(common_search)]
         if common_search

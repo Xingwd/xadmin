@@ -1,6 +1,7 @@
 import json
+from collections.abc import Awaitable, Callable
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
 from fastapi.openapi.docs import (
     get_swagger_ui_html,
     get_swagger_ui_oauth2_redirect_html,
@@ -8,6 +9,7 @@ from fastapi.openapi.docs import (
 from fastapi.routing import APIRoute
 from fastapi.utils import generate_unique_id
 from starlette.middleware.cors import CORSMiddleware
+from starlette.responses import HTMLResponse
 
 from app.api.main import api_router
 from app.core.config import settings
@@ -19,7 +21,7 @@ from app.models.operation_log import OperationLogCreate
 def custom_generate_unique_id(route: APIRoute) -> str:
     if route.include_in_schema:
         return f"{route.tags[0]}-{route.name}"
-    return generate_unique_id
+    return generate_unique_id(route)
 
 
 app = FastAPI(
@@ -42,9 +44,9 @@ if settings.all_cors_origins:
 
 
 @app.get("/docs", include_in_schema=False)
-async def custom_swagger_ui_html():
+async def custom_swagger_ui_html() -> HTMLResponse:
     return get_swagger_ui_html(
-        openapi_url=app.openapi_url,
+        openapi_url=app.openapi_url or "/openapi.json",
         title=app.title + " - Swagger UI",
         oauth2_redirect_url=app.swagger_ui_oauth2_redirect_url,
         swagger_js_url="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js",
@@ -52,13 +54,18 @@ async def custom_swagger_ui_html():
     )
 
 
-@app.get(app.swagger_ui_oauth2_redirect_url, include_in_schema=False)
-async def swagger_ui_redirect():
+@app.get(
+    app.swagger_ui_oauth2_redirect_url or "/docs/oauth2-redirect",
+    include_in_schema=False,
+)
+async def swagger_ui_redirect() -> HTMLResponse:
     return get_swagger_ui_oauth2_redirect_html()
 
 
 @app.middleware("http")
-async def save_operation_log(request: Request, call_next):
+async def save_operation_log(
+    request: Request, call_next: Callable[[Request], Awaitable[Response]]
+) -> Response:
     response = await call_next(request)
 
     method, path = request.method, request.url.path

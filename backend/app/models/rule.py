@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from datetime import datetime
 from enum import Enum
 from typing import TYPE_CHECKING
@@ -53,9 +54,9 @@ class RuleCreate(RuleRowBase):
 
 # Properties to receive via API on update, all are optional
 class RuleUpdate(RuleRowBase):
-    type: RuleType | None = Field(default=None)
-    title: str | None = Field(default=None)
-    name: str | None = Field(default=None)
+    type: RuleType | None = Field(default=None)  # type: ignore[assignment]
+    title: str | None = Field(default=None)  # type: ignore[assignment]
+    name: str | None = Field(default=None)  # type: ignore[assignment]
 
 
 # Database model, database table inferred from class name
@@ -83,13 +84,13 @@ class RuleTreePublic(RuleRowBase):
     id: int
     created_at: datetime
     updated_at: datetime
-    children: list["RuleTreePublic"] | None = Field(default=None)
+    children: Sequence["RuleTreePublic"] | None = Field(default=None)
 
 
 class RuleTreesPublic(SQLModel):
-    data: list[RuleTreePublic]
+    data: Sequence[RuleTreePublic]
 
 
 class UserRuleTreePublic(RuleBase):
     id: int
-    children: list["UserRuleTreePublic"] | None = Field(default=None)
+    children: Sequence["UserRuleTreePublic"] | None = Field(default=None)

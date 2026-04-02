@@ -21,7 +21,7 @@
                     <img src="~assets/login-header.png" alt="" />
                 </div>
                 <div class="form">
-                    <img class="profile-avatar" :src="fullUrl('/static/images/avatar.png')" alt="" />
+                    <img class="profile-avatar" :src="fullUrl('/static/assets/images/avatar.png')" alt="" />
                     <div class="content">
                         <el-form @keyup.enter="onSubmitPre()" ref="formRef" :rules="rules" size="large" :model="form">
                             <el-form-item prop="username">

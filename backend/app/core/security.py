@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import Any
@@ -14,7 +15,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 ALGORITHM = "HS256"
 
 
-def create_access_token(subject: str | Any, scopes: list[str] | None = None) -> str:
+def create_access_token(subject: str | Any, scopes: Sequence[str] | None = None) -> str:
     if scopes is None:
         scopes = []
     expire = datetime.now(timezone.utc) + timedelta(
@@ -33,7 +34,7 @@ def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 
-def decode_token(token: str) -> dict:
+def decode_token(token: str) -> Any:
     return jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
 
 

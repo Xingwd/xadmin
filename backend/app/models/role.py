@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from datetime import datetime
 from typing import TYPE_CHECKING
 
@@ -18,14 +19,14 @@ class RoleBase(SQLModel):
 
 # Properties to receive on creation
 class RoleCreate(RoleBase):
-    permissions: list[int] | None = Field(default=None)
-    users: list[int] | None = Field(default=None)
+    permissions: Sequence[int] | None = Field(default=None)
+    users: Sequence[int] | None = Field(default=None)
 
 
 # Properties to receive on update
 class RoleUpdate(RoleBase):
-    permissions: list[int] | None = Field(default=None)
-    users: list[int] | None = Field(default=None)
+    permissions: Sequence[int] | None = Field(default=None)
+    users: Sequence[int] | None = Field(default=None)
 
 
 # Database model, database table inferred from class name
@@ -56,10 +57,10 @@ class RolePublic(RoleBase):
     id: int
     created_at: datetime
     updated_at: datetime
-    permissions: list[RoleRule] | None = Field(default=None)
-    users: list[RoleUser] | None = Field(default=None)
+    permissions: Sequence[RoleRule] | None = Field(default=None)
+    users: Sequence[RoleUser] | None = Field(default=None)
 
 
 class RolesPublic(SQLModel):
-    data: list[RolePublic]
+    data: Sequence[RolePublic]
     total: int

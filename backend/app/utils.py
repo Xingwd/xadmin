@@ -2,7 +2,7 @@ import random
 import string
 
 
-def generate_secure_password(chars=8, nums=6, symbols=2):
+def generate_secure_password(chars: int = 8, nums: int = 6, symbols: int = 2) -> str:
     letters = random.sample(string.ascii_letters, chars)
     digits = random.sample(string.digits, nums)
     puncts = random.sample("!@#$%^&*", symbols)

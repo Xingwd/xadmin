@@ -1,17 +1,21 @@
+from collections.abc import Sequence
 from datetime import date, datetime, timedelta
 from typing import Any
 
-from sqlmodel import Session, case, func, select
+from sqlmodel import Session, case, col, func, select
 
 from app.core.config import settings
 from app.core.security import get_password_hash, oauth2_scopes
 from app.crud.common import handle_search_params
 from app.crud.rule import get_rules
-from app.models.operation_log import OperationLog, OperationLogsPublic
+from app.models.operation_log import (
+    OperationLog,
+    OperationLogPublic,
+    OperationLogsPublic,
+)
 from app.models.query import (
     CommonSearchParam,
     OrderDirection,
-    OrderParams,
     PaginationParams,
 )
 from app.models.role import Role
@@ -21,6 +25,8 @@ from app.models.user import (
     UserBehaviorCount,
     UserCreate,
     UserHome,
+    UserMenuCount,
+    UserPublic,
     UsersPublic,
     UserUpdate,
     UserUpdateMe,
@@ -57,9 +63,12 @@ def update_user(*, session: Session, db_user: User, user_update: UserUpdate) -> 
     db_user.sqlmodel_update(user_data, update=extra_data)
 
     # 更新用户角色
-    new_roles = (
-        [session.get(Role, id) for id in user_update.roles] if user_update.roles else []
-    )
+    new_roles = []
+    if user_update.roles:
+        for id in user_update.roles:
+            role = session.get(Role, id)
+            if role:
+                new_roles.append(role)
     if new_roles != db_user.roles:
         db_user.roles = new_roles
         db_user.updated_at = datetime.now()
@@ -103,9 +112,10 @@ def get_users(
     *,
     session: Session,
     pagination: PaginationParams,
-    order: OrderParams,
+    order_by: str,
+    order_direction: OrderDirection,
     quick_search: str,
-    common_search: list[CommonSearchParam],
+    common_search: Sequence[CommonSearchParam],
 ) -> UsersPublic:
     where_clause = handle_search_params(
         User, quick_search, ["username", "full_name"], common_search
@@ -118,19 +128,21 @@ def get_users(
         select(User)
         .where(*where_clause)
         .order_by(
-            getattr(User, order.order_by).desc()
-            if order.order_direction == OrderDirection.desc
-            else getattr(User, order.order_by).asc()
+            getattr(User, order_by).desc()
+            if order_direction == OrderDirection.desc
+            else getattr(User, order_by).asc()
         )
         .offset((pagination.skip - 1) * pagination.limit)
         .limit(pagination.limit)
     )
     users = session.exec(statement).all()
 
-    return UsersPublic(data=users, total=total)
+    return UsersPublic(
+        data=[UserPublic.model_validate(user) for user in users], total=total
+    )
 
 
-def get_user_permissions(*, session: Session, user: User) -> set[str]:
+def get_user_permissions(*, session: Session, user: User) -> Sequence[str]:
     permissions = set()
     if user.is_superuser:
         for rule in get_rules(session=session):
@@ -139,14 +151,14 @@ def get_user_permissions(*, session: Session, user: User) -> set[str]:
         for role in user.roles:
             for permission in role.permissions:
                 permissions.add(permission.name)
-    return permissions
+    return list(permissions)
 
 
-def get_user_rules(*, session: Session, user: User) -> list[UserRuleTreePublic]:
-    where_clause = [Rule.status.is_(True)]
+def get_user_rules(*, session: Session, user: User) -> Sequence[UserRuleTreePublic]:
+    where_clause = [col(Rule.status).is_(True)]
     if not user.is_superuser:
         where_clause.append(
-            Rule.name.in_(get_user_permissions(session=session, user=user))
+            col(Rule.name).in_(get_user_permissions(session=session, user=user))
         )
     statement = select(Rule).where(*where_clause)
     rules = session.exec(statement).all()
@@ -166,7 +178,7 @@ def get_user_rules(*, session: Session, user: User) -> list[UserRuleTreePublic]:
         else:  # 设置为根节点
             root_rules.append(rule)
 
-    def process_children(children: list[Rule]) -> list[UserRuleTreePublic]:
+    def process_children(children: Sequence[Rule]) -> Sequence[UserRuleTreePublic]:
         sorted_children = sorted(children, key=lambda x: x.weight, reverse=True)
         rules = []
         for child in sorted_children:
@@ -195,13 +207,15 @@ def get_user_logs(
     statement = (
         select(OperationLog)
         .where(*where_clause)
-        .order_by(OperationLog.created_at.desc())
+        .order_by(col(OperationLog.created_at).desc())
         .offset((pagination.skip - 1) * pagination.limit)
         .limit(pagination.limit)
     )
     logs = session.exec(statement).all()
 
-    return OperationLogsPublic(data=logs, total=count)
+    return OperationLogsPublic(
+        data=[OperationLogPublic.model_validate(log) for log in logs], total=count
+    )
 
 
 def get_user_home(*, session: Session, user: User) -> UserHome:
@@ -221,7 +235,7 @@ def get_user_home(*, session: Session, user: User) -> UserHome:
         func.date(OperationLog.created_at) > date.today() - timedelta(days=60),
     ]
 
-    def get_count(where_clause: list = None) -> list[int, int, int, int]:
+    def get_count(where_clause: Sequence[bool] | None = None) -> Sequence[int]:
         where_clause = where_clause or []
         result = []
         for clause in [
@@ -249,7 +263,9 @@ def get_user_home(*, session: Session, user: User) -> UserHome:
         get_count()
     )
 
-    def get_detail(where_clause: list = None):
+    def get_detail(
+        where_clause: Sequence[bool] | None = None,
+    ) -> Sequence[Sequence[tuple[date, int]]]:
         where_clause = where_clause or []
         result = []
         for clause in [where_clause_1w, where_clause_1m]:
@@ -272,7 +288,11 @@ def get_user_home(*, session: Session, user: User) -> UserHome:
     logins_1w_detail, logins_1m_detail = get_detail(logins_where_clause)
     operations_1w_detail, operations_1m_detail = get_detail()
 
-    def build_behavior_data(logins_detail, operations_detail, days=7):
+    def build_behavior_data(
+        logins_detail: Sequence[tuple[date, int]],
+        operations_detail: Sequence[tuple[date, int]],
+        days: int = 7,
+    ) -> Sequence[UserBehaviorCount]:
         behavior = []
         logins_dict = {i[0]: i[1] for i in logins_detail}
         operations_dict = {i[0]: i[1] for i in operations_detail}
@@ -298,16 +318,18 @@ def get_user_home(*, session: Session, user: User) -> UserHome:
     behavior_1m = build_behavior_data(logins_1m_detail, operations_1m_detail, days=30)
 
     menus_where_clause = [
-        OperationLog.name.in_(get_user_permissions(session=session, user=user)),
-        OperationLog.response_status_code >= 200,
-        OperationLog.response_status_code < 300,
-        OperationLog.request_path.not_in(settings.USER_HOME_FEATURES_EXCLUDE_PATHS),
+        col(OperationLog.name).in_(get_user_permissions(session=session, user=user)),
+        col(OperationLog.response_status_code) >= 200,
+        col(OperationLog.response_status_code) < 300,
+        col(OperationLog.request_path).not_in(
+            settings.USER_HOME_FEATURES_EXCLUDE_PATHS
+        ),
     ]
     menus_statement = (
         select(
             case(
                 (
-                    OperationLog.name.in_(oauth2_scopes.keys()),
+                    col(OperationLog.name).in_(oauth2_scopes.keys()),
                     func.split_part(OperationLog.name, ":", 1),
                 ),
                 else_=OperationLog.name,
@@ -322,7 +344,10 @@ def get_user_home(*, session: Session, user: User) -> UserHome:
         .group_by("menu")
         .order_by(func.count().desc())
     )
-    menus = session.exec(menus_statement).all()
+    menus = [
+        UserMenuCount(menu=menu, count=count)
+        for menu, count in session.exec(menus_statement).all()
+    ]
 
     home = UserHome(
         logins_1w=logins_1w,
