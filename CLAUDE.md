@@ -16,14 +16,14 @@ Based on [Full Stack FastAPI Template](https://github.com/fastapi/full-stack-fas
 ### Docker Compose (Recommended)
 
 ```bash
-# Start full development stack
+# Start full development stack with file watching
 docker compose watch
 
 # View logs
 docker compose logs
 docker compose logs backend
 
-# Stop services
+# Stop individual services
 docker compose stop frontend
 docker compose stop backend
 
@@ -46,8 +46,8 @@ fastapi dev app/main.py
 # or
 fastapi run --reload app/main.py
 
-# Run tests
-bash ../scripts/test.sh
+# Run tests locally
+bash ../scripts/test-local.sh
 
 # Database migrations (run inside container or with local env)
 alembic revision --autogenerate -m "Description"
@@ -57,6 +57,7 @@ alembic upgrade head
 ruff check .
 ruff check --fix .
 mypy .
+bash ../scripts/format.sh  # script combining all formatting
 ```
 
 ### Frontend (Local)
@@ -79,7 +80,7 @@ pnpm run lint-fix
 pnpm run format
 pnpm run typecheck
 
-# Generate API client from OpenAPI schema
+# Generate API client from OpenAPI schema (requires backend running)
 pnpm run generate-client
 ```
 
@@ -88,7 +89,7 @@ pnpm run generate-client
 Located in `./scripts/`:
 - `test.sh` - Run backend tests in Docker
 - `test-local.sh` - Run backend tests locally
-- `generate-client.sh` - Generate frontend API client
+- `generate-client.sh` - Generate frontend API client from backend OpenAPI schema
 - `format.sh` - Format backend code
 - `build.sh`, `build-push.sh`, `deploy.sh` - Build and deployment
 
@@ -135,7 +136,7 @@ app/
    - `*Base` - Shared fields
    - `*` - Table model (database)
    - `*Create`, `*Update` - API input schemas
-   - `*Public`, `*Public` - API output schemas
+   - `*Public` - API output schemas
 
 3. **CRUD Pattern**: Functions in `crud/` accept `SessionDep` and operate on models. Common search/filter logic in `crud/common.py`.
 
@@ -180,7 +181,7 @@ src/
    - API calls (index, add, edit, del)
    - Form state management
    - Table actions and events
-   - Common search/filter
+   - Common search/filter with operators (eq, RANGE, NULL, etc.)
 
 2. **Data Fetching**: Uses Pinia Colada (`useQuery`, `useMutation`) for:
    - Server state caching
@@ -212,7 +213,7 @@ src/
 5. Add to `backend/app/api/main.py` router
 6. Generate migration: `alembic revision --autogenerate -m "Add model"`
 7. Apply migration: `alembic upgrade head`
-8. Regenerate frontend client: `./scripts/generate-frontend-client.sh`
+8. Regenerate frontend client: `./scripts/generate-client.sh`
 
 ### Adding API Permissions
 
@@ -241,8 +242,11 @@ Use `XaTableClass` pattern from existing views like `views/system/role/`:
 Backend uses pytest. Tests in `backend/app/tests/`.
 
 ```bash
-# Run all tests
+# Run all tests in Docker
 bash scripts/test.sh
+
+# Run tests locally
+bash scripts/test-local.sh
 
 # Run in active stack
 docker compose exec backend bash scripts/tests-start.sh
