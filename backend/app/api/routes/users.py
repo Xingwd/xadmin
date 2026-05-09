@@ -1,3 +1,5 @@
+from collections.abc import Sequence
+
 from fastapi import APIRouter, Depends, HTTPException, Query, Security
 
 from app.api.common import check_order_params
@@ -40,7 +42,7 @@ def read_users(
     pagination: PaginationParams = Depends(),
     order: OrderParams = Depends(),
     quick_search: str = Query(None, description="Quick search"),
-    common_search: list[CommonSearchParam] = Depends(build_common_search_params),
+    common_search: Sequence[CommonSearchParam] = Depends(build_common_search_params),
 ) -> UsersPublic:
     """
     Read users
@@ -83,6 +85,9 @@ def read_user_operation_logs(
     """
     Read current user operation logs.
     """
+    if current_user.id is None:
+        raise HTTPException(status_code=400, detail="Current user id is missing")
+
     operation_logs = crud.get_user_logs(
         session=session,
         pagination=pagination,
@@ -121,6 +126,8 @@ def update_user_me(
     Update own user.
     """
     db_user = session.get(User, current_user.id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
     crud.update_user_me(
         session=session,
         db_user=db_user,
@@ -145,6 +152,8 @@ def delete_user_me(
         )
 
     user = session.get(User, current_user.id)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
     crud.delete_user(session=session, user=user)
     return Message(message="User deleted successfully")
 
@@ -182,7 +191,9 @@ def read_user_by_id(id: int, session: SessionDep) -> UserPublic:
     Read a specific user by id.
     """
     user = session.get(User, id)
-    return user
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return UserPublic.model_validate(user)
 
 
 @router.post(

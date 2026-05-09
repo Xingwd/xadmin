@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from datetime import datetime
 from enum import Enum
 from typing import TYPE_CHECKING
@@ -52,17 +53,27 @@ class RuleCreate(RuleRowBase):
 
 
 # Properties to receive via API on update, all are optional
-class RuleUpdate(RuleRowBase):
+class RuleUpdate(SQLModel):
+    parent_id: int | None = Field(default=None)
     type: RuleType | None = Field(default=None)
     title: str | None = Field(default=None)
     name: str | None = Field(default=None)
+    path: str | None = Field(default=None)
+    icon: str | None = Field(default=None)
+    menu_item_type: MenuItemType | None = Field(default=None)
+    url: str | None = Field(default=None)
+    component: str | None = Field(default=None)
+    remark: str | None = Field(default=None)
+    cache: bool | None = Field(default=None)
+    weight: int | None = Field(default=None)
+    status: bool | None = Field(default=None)
 
 
 # Database model, database table inferred from class name
 class Rule(RuleRowBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    created_at: TableRecordCreatedDateTime
-    updated_at: TableRecordUpdatedDateTime
+    created_at: TableRecordCreatedDateTime | None = Field(default=None)
+    updated_at: TableRecordUpdatedDateTime | None = Field(default=None)
     parent_id: int | None = Field(
         default=None, foreign_key="rule.id", ondelete="SET NULL"
     )
@@ -83,13 +94,13 @@ class RuleTreePublic(RuleRowBase):
     id: int
     created_at: datetime
     updated_at: datetime
-    children: list["RuleTreePublic"] | None = Field(default=None)
+    children: Sequence["RuleTreePublic"] | None = Field(default=None)
 
 
 class RuleTreesPublic(SQLModel):
-    data: list[RuleTreePublic]
+    data: Sequence[RuleTreePublic]
 
 
 class UserRuleTreePublic(RuleBase):
     id: int
-    children: list["UserRuleTreePublic"] | None = Field(default=None)
+    children: Sequence["UserRuleTreePublic"] | None = Field(default=None)

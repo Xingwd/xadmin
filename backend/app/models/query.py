@@ -15,7 +15,7 @@ class OrderDirection(str, Enum):
 
 
 class OrderParams(SQLModel):
-    order_by: str | None = Query(None, description="The field to order by")
+    order_by: str = Query(None, description="The field to order by")
     order_direction: OrderDirection = Query(
         OrderDirection.desc, description="The order direction: 'asc' or 'desc'"
     )

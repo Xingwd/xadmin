@@ -56,7 +56,7 @@ def read_role(session: SessionDep, id: int) -> RolePublic:
     role = session.get(Role, id)
     if not role:
         raise HTTPException(status_code=404, detail="Role not found")
-    return role
+    return RolePublic.model_validate(role)
 
 
 @router.post(

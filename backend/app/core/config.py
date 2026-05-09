@@ -1,5 +1,6 @@
 import secrets
 import warnings
+from collections.abc import Sequence
 from typing import Annotated, Any, Literal
 
 from pydantic import (
@@ -14,7 +15,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing_extensions import Self
 
 
-def parse_cors(v: Any) -> list[str] | str:
+def parse_cors(v: Any) -> Sequence[str] | str:
     if isinstance(v, str) and not v.startswith("["):
         return [i.strip() for i in v.split(",")]
     elif isinstance(v, list | str):
@@ -37,12 +38,12 @@ class Settings(BaseSettings):
     ENVIRONMENT: Literal["local", "staging", "production"] = "local"
 
     BACKEND_CORS_ORIGINS: Annotated[
-        list[AnyUrl] | str, BeforeValidator(parse_cors)
+        Sequence[AnyUrl] | str, BeforeValidator(parse_cors)
     ] = []
 
     @computed_field  # type: ignore[prop-decorator]
     @property
-    def all_cors_origins(self) -> list[str]:
+    def all_cors_origins(self) -> Sequence[str]:
         return [str(origin).rstrip("/") for origin in self.BACKEND_CORS_ORIGINS] + [
             self.FRONTEND_HOST
         ]
@@ -73,17 +74,16 @@ class Settings(BaseSettings):
 
     OPEN_REGISTRATION: bool = False
 
-    LOG_EXCLUDE_PATHS: list[str] = [
-        f"{API_V1_STR}/openapi.json",
-        f"{API_V1_STR}/docs",
-        f"{API_V1_STR}/utils/health-check/",
+    LOG_EXCLUDE_PATHS: Sequence[str] = [
+        "/openapi.json",
+        "/docs",
     ]
     LOG_STATIC_PATHS: dict[str, str] = {
         f"{API_V1_STR}/login/access-token": "登录",
         f"{API_V1_STR}/login/test-token": "测试Token",
         f"{API_V1_STR}/operation-logs/submit": "query_params.rule_name",
     }
-    USER_HOME_FEATURES_EXCLUDE_PATHS: list[str] = [
+    USER_HOME_FEATURES_EXCLUDE_PATHS: Sequence[str] = [
         f"{API_V1_STR}/login/access-token",
         f"{API_V1_STR}/login/test-token",
         f"{API_V1_STR}/users/home",

@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from enum import Enum
 
 from sqlmodel import SQLModel
@@ -12,7 +13,7 @@ class Token(SQLModel):
 # Contents of JWT token
 class TokenPayload(SQLModel):
     sub: str | None = None
-    scopes: list[str] = []
+    scopes: Sequence[str] = []
 
 
 class Permission(SQLModel):

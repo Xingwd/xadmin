@@ -2,7 +2,7 @@ from sqlmodel import Session, create_engine, select
 
 from app.core.config import settings
 from app.core.security import ApiPermissions
-from app.models.rule import MenuItemType, Rule, RuleType
+from app.models.rule import MenuItemType, Rule, RuleCreate, RuleType
 from app.models.user import User, UserCreate
 
 engine = create_engine(
@@ -75,7 +75,9 @@ def init_rule(session: Session) -> None:
             ),
         ],
     )
-    crud_rule.create_rule(session=session, rule_create=home_in)
+    crud_rule.create_rule(
+        session=session, rule_create=RuleCreate.model_validate(home_in)
+    )
 
     routine_dir_in = Rule(
         type=RuleType.menu_dir,
@@ -114,7 +116,9 @@ def init_rule(session: Session) -> None:
             )
         ],
     )
-    crud_rule.create_rule(session=session, rule_create=routine_dir_in)
+    crud_rule.create_rule(
+        session=session, rule_create=RuleCreate.model_validate(routine_dir_in)
+    )
 
     system_dir_in = Rule(
         type=RuleType.menu_dir,
@@ -244,4 +248,6 @@ def init_rule(session: Session) -> None:
             ),
         ],
     )
-    crud_rule.create_rule(session=session, rule_create=system_dir_in)
+    crud_rule.create_rule(
+        session=session, rule_create=RuleCreate.model_validate(system_dir_in)
+    )
