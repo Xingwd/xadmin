@@ -129,6 +129,31 @@ def test_read_rules_only_menus(
     assert len(data["data"]) >= 2
 
 
+def test_read_rules_with_quick_search(
+    client: TestClient, superuser_token_headers: dict[str, str], db: Session
+) -> None:
+    prefix = random_lower_string()[:12]
+    rule = crud.create_rule(
+        session=db,
+        rule_create=RuleCreate(
+            type=RuleType.menu_item,
+            title=f"{prefix}_title",
+            name=f"{prefix}_name",
+        ),
+    )
+    create_random_rule(db)
+
+    r = client.get(
+        f"{settings.API_V1_STR}/rules/",
+        params={"quick_search": prefix},
+        headers=superuser_token_headers,
+    )
+
+    assert r.status_code == 200
+    data = r.json()
+    assert [item["id"] for item in data["data"]] == [rule.id]
+
+
 def test_update_rule(
     client: TestClient, superuser_token_headers: dict[str, str], db: Session
 ) -> None:
@@ -241,3 +266,29 @@ def test_get_permissions(
     assert r.status_code == 200
     data = r.json()
     assert len(data) > 0
+
+
+def test_get_unassigned_permissions(
+    client: TestClient, superuser_token_headers: dict[str, str], db: Session
+) -> None:
+    permission_name = f"{settings.API_V1_STR}/users/:read"
+    existing_rule = crud.get_rule_by_name(session=db, name=permission_name)
+    if existing_rule is None:
+        crud.create_rule(
+            session=db,
+            rule_create=RuleCreate(
+                type=RuleType.permission,
+                title=random_lower_string(),
+                name=permission_name,
+            ),
+        )
+
+    r = client.get(
+        f"{settings.API_V1_STR}/rules/permissions",
+        params={"unassigned": True},
+        headers=superuser_token_headers,
+    )
+
+    assert r.status_code == 200
+    data = r.json()
+    assert permission_name not in [item["name"] for item in data]

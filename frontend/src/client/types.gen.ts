@@ -79,6 +79,7 @@ export type RoleUser = {
 
 export type RolesPublic = {
     data: Array<RolePublic>
+    total: number
 }
 
 export type RuleCreate = {
@@ -323,7 +324,7 @@ export type UsersReadUsersData = {
         limit?: number
         order_by?: string | null
         order_direction?: OrderDirection
-        common_search?: string
+        common_search?: string | null
     }
     url: '/api/v1/users/'
 }
@@ -756,6 +757,10 @@ export type RolesReadRolesData = {
          * Quick search
          */
         quick_search?: string
+        skip?: number
+        limit?: number
+        order_by?: string | null
+        order_direction?: OrderDirection
     }
     url: '/api/v1/roles/'
 }
@@ -896,7 +901,7 @@ export type OperationLogsReadOperationLogsData = {
         limit?: number
         order_by?: string | null
         order_direction?: OrderDirection
-        common_search?: string
+        common_search?: string | null
     }
     url: '/api/v1/operation-logs/'
 }

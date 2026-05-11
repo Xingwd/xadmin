@@ -101,7 +101,7 @@ Security(get_current_user, scopes=[ApiPermissions.V1_RULES.value.read.name])
 
 ## 后端测试
 
-要测试后端，请运行：
+要测试后端，请在项目顶级目录运行：
 
 ```console
 bash ./scripts/test.sh

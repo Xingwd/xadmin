@@ -2,7 +2,8 @@ from collections.abc import Generator
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlmodel import Session, delete
+from sqlalchemy import delete
+from sqlmodel import Session
 
 from app.core.config import settings
 from app.core.db import engine, init_db
@@ -22,17 +23,17 @@ def db() -> Generator[Session, None, None]:
         init_db(session)
         yield session
         statement = delete(RoleRuleLink)
-        session.exec(statement)
+        session.execute(statement)
         statement = delete(UserRoleLink)
-        session.exec(statement)
+        session.execute(statement)
         statement = delete(Rule)
-        session.exec(statement)
+        session.execute(statement)
         statement = delete(Role)
-        session.exec(statement)
+        session.execute(statement)
         statement = delete(User)
-        session.exec(statement)
+        session.execute(statement)
         statement = delete(OperationLog)
-        session.exec(statement)
+        session.execute(statement)
         session.commit()
 
 

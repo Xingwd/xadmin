@@ -1,17 +1,20 @@
+from collections.abc import Sequence
 from datetime import datetime
 
+from sqlalchemy import true
+from sqlalchemy.sql.elements import ColumnElement
 from sqlmodel import SQLModel, or_
 
 from app.models.query import CommonSearchParam, Operator
 
 
 def build_where_clause(
-    model_class: SQLModel,
+    model_class: type[SQLModel],
     field: str,
-    value: str,
+    value: str | int | bool,
     operator: Operator,
     render: str | None = None,
-) -> list[bool]:
+) -> Sequence[ColumnElement[bool]]:
     if operator == Operator.eq:
         return [getattr(model_class, field) == value]
     elif operator == Operator.ne:
@@ -29,22 +32,28 @@ def build_where_clause(
     elif operator == Operator.NOT_LIKE:
         return [getattr(model_class, field).not_like(f"%{value}%")]
     elif operator == Operator.IN:
-        return [getattr(model_class, field).in_(value.split(","))]
+        return [getattr(model_class, field).in_(str(value).split(","))]
     elif operator == Operator.NOT_IN:
-        return [getattr(model_class, field).not_in(value.split(","))]
+        return [getattr(model_class, field).not_in(str(value).split(","))]
     elif operator in [Operator.RANGE, Operator.NOT_RANGE]:
-        start, end = value.split(",")
+        start, end = str(value).split(",")
         clause, or_clause = [], []
         if start:
             if render == "datetime":
-                start = datetime.strptime(start, "%Y-%m-%d %H:%M:%S")
-            clause.append(getattr(model_class, field) >= start)
-            or_clause.append(getattr(model_class, field) < start)
+                start_datetime = datetime.strptime(start, "%Y-%m-%d %H:%M:%S")
+                clause.append(getattr(model_class, field) >= start_datetime)
+                or_clause.append(getattr(model_class, field) < start_datetime)
+            else:
+                clause.append(getattr(model_class, field) >= start)
+                or_clause.append(getattr(model_class, field) < start)
         if end:
             if render == "datetime":
-                end = datetime.strptime(end, "%Y-%m-%d %H:%M:%S")
-            clause.append(getattr(model_class, field) <= end)
-            or_clause.append(getattr(model_class, field) > end)
+                end_datetime = datetime.strptime(end, "%Y-%m-%d %H:%M:%S")
+                clause.append(getattr(model_class, field) <= end_datetime)
+                or_clause.append(getattr(model_class, field) > end_datetime)
+            else:
+                clause.append(getattr(model_class, field) <= end)
+                or_clause.append(getattr(model_class, field) > end)
         if operator == Operator.NOT_RANGE:
             clause = [or_(*or_clause)]
         return clause
@@ -57,12 +66,12 @@ def build_where_clause(
 
 
 def handle_search_params(
-    model_class: SQLModel,
+    model_class: type[SQLModel],
     quick_search: str,
-    quick_search_fields: list[str],
-    common_search: list[CommonSearchParam] = None,
-) -> list[bool]:
-    where_clause = [True]
+    quick_search_fields: Sequence[str],
+    common_search: Sequence[CommonSearchParam] | None = None,
+) -> Sequence[ColumnElement[bool]]:
+    where_clause: list[ColumnElement[bool]] = [true()]
     if quick_search:
         or_clause = [
             build_where_clause(model_class, field, quick_search, Operator.LIKE)[0]

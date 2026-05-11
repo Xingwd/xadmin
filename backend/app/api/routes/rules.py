@@ -1,3 +1,5 @@
+from collections.abc import Sequence
+
 from fastapi import APIRouter, HTTPException, Query, Security
 
 from app.api.deps import SessionDep, get_current_user
@@ -43,12 +45,12 @@ def read_rules(
     dependencies=[
         Security(get_current_user, scopes=[ApiPermissions.V1_RULES.value.read.name])
     ],
-    response_model=list[Permission],
+    response_model=Sequence[Permission],
 )
 def read_permissions(
     session: SessionDep,
     unassigned: bool = Query(False, description="Unassigned to rule"),
-) -> list[Permission]:
+) -> Sequence[Permission]:
     """
     Read permissions.
     """
@@ -81,7 +83,7 @@ def read_rule(session: SessionDep, id: int) -> RuleTreePublic:
     rule = session.get(Rule, id)
     if not rule:
         raise HTTPException(status_code=404, detail="Rule not found")
-    return rule
+    return RuleTreePublic.model_validate(rule)
 
 
 @router.post(

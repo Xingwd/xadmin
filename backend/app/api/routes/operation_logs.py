@@ -1,4 +1,5 @@
 import uuid
+from collections.abc import Sequence
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Security
 
@@ -35,17 +36,18 @@ def read_operation_logs(
     pagination: PaginationParams = Depends(),
     order: OrderParams = Depends(),
     quick_search: str = Query(None, description="Quick search"),
-    common_search: list[CommonSearchParam] = Depends(build_common_search_params),
+    common_search: Sequence[CommonSearchParam] = Depends(build_common_search_params),
 ) -> OperationLogsPublic:
     """
     Read operation logs
     """
-    check_order_params(OperationLog, order, OrderParams(order_by="created_at"))
+    check_order_params(OperationLog, order)
 
     logs = crud.get_operation_logs(
         session=session,
         pagination=pagination,
-        order=order,
+        order_by=order.order_by or "created_at",
+        order_direction=order.order_direction,
         quick_search=quick_search,
         common_search=common_search,
     )
@@ -77,7 +79,7 @@ def read_operation_log_by_id(id: uuid.UUID, session: SessionDep) -> OperationLog
     operation_log = session.get(OperationLog, id)
     if not operation_log:
         raise HTTPException(status_code=404, detail="Operation log not found")
-    return operation_log
+    return OperationLogPublic.model_validate(operation_log)
 
 
 @router.delete(

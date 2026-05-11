@@ -1,4 +1,6 @@
-from sqlmodel import Session, select
+from collections.abc import Sequence
+
+from sqlmodel import Session, col, select
 
 from app.core.db import engine
 from app.crud.common import handle_search_params
@@ -35,18 +37,18 @@ def delete_rule(*, session: Session, rule: Rule) -> None:
     session.commit()
 
 
-def get_rules(*, session: Session) -> list[Rule]:
+def get_rules(*, session: Session) -> Sequence[Rule]:
     rules = session.exec(select(Rule)).all()
     return rules
 
 
 def get_rule_trees(
-    *, session: Session, only_menus: bool = False, quick_search: str = None
+    *, session: Session, only_menus: bool = False, quick_search: str | None = None
 ) -> RuleTreesPublic:
     data = []
     menu_types = [RuleType.menu_dir, RuleType.menu_item]
     if quick_search:
-        where_clause = [Rule.type.in_(menu_types)] if only_menus else []
+        where_clause = [col(Rule.type).in_(menu_types)] if only_menus else []
         statement = select(Rule).where(
             *where_clause, *handle_search_params(Rule, quick_search, ["title"])
         )
@@ -56,14 +58,18 @@ def get_rule_trees(
         ]
     else:
         statement = (
-            select(Rule).where(Rule.parent_id.is_(None)).order_by(Rule.weight.desc())
+            select(Rule)
+            .where(col(Rule.parent_id).is_(None))
+            .order_by(col(Rule.weight).desc())
         )
         rules = session.exec(statement).all()
 
         if only_menus:
 
             def build_trees(
-                rules: list[Rule], menus: list[RuleTreePublic], level: int = 0
+                rules: Sequence[Rule],
+                menus: list[RuleTreePublic],
+                level: int = 0,
             ) -> list[RuleTreePublic]:
                 for index, rule in enumerate(rules):
                     if rule.type in menu_types:
@@ -88,16 +94,23 @@ def get_rule_trees(
 
             data = build_trees(rules, [])
         else:
-            data = rules
+            data = [
+                RuleTreePublic.model_validate(rule, update={"children": rule.children})
+                for rule in rules
+            ]
     return RuleTreesPublic(data=data)
 
 
-def get_rules_by_type(*, session: Session, rule_types: list[RuleType]) -> list[Rule]:
-    statement = select(Rule).where(Rule.type.in_(rule_types))
+def get_rules_by_type(
+    *, session: Session, rule_types: Sequence[RuleType]
+) -> Sequence[Rule]:
+    statement = select(Rule).where(col(Rule.type).in_(rule_types))
     return session.exec(statement).all()
 
 
-def get_full_title(rule_name: str) -> str:
+def get_full_title(rule_name: str | None) -> str | None:
+    if rule_name is None:
+        return None
     with Session(engine) as session:
         statement = select(Rule).where(Rule.name == rule_name)
         rule = session.exec(statement).first()
@@ -108,6 +121,6 @@ def get_full_title(rule_name: str) -> str:
         return "-".join(titles[::-1])
 
 
-def get_rule_by_name(*, session: Session, name: str) -> Rule:
+def get_rule_by_name(*, session: Session, name: str) -> Rule | None:
     statement = select(Rule).where(Rule.name == name)
     return session.exec(statement).first()

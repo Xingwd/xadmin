@@ -43,6 +43,7 @@
                             field: 'username',
                             remoteQueryKey: 'users',
                             remoteQuery: usersReadUsers,
+                            initOptions: xaTable.form.items!.existingUsers,
                             multiple: true,
                             placeholder: t('Click select'),
                         }"

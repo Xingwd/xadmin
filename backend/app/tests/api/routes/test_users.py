@@ -137,6 +137,80 @@ def test_retrieve_users(
         assert "username" in item
 
 
+def test_retrieve_users_with_quick_search_and_pagination(
+    client: TestClient, superuser_token_headers: dict[str, str], db: Session
+) -> None:
+    prefix = random_lower_string()[:12]
+    usernames = [f"{prefix}_a", f"{prefix}_b", f"{prefix}_c"]
+    for username in usernames:
+        crud.create_user(
+            session=db,
+            user_create=UserCreate(username=username, password=random_lower_string()),
+        )
+
+    r = client.get(
+        f"{settings.API_V1_STR}/users/",
+        params={
+            "quick_search": prefix,
+            "skip": 2,
+            "limit": 1,
+            "order_by": "username",
+            "order_direction": "asc",
+        },
+        headers=superuser_token_headers,
+    )
+
+    assert r.status_code == 200
+    data = r.json()
+    assert data["total"] == 3
+    assert [item["username"] for item in data["data"]] == [usernames[1]]
+
+
+def test_retrieve_users_with_common_search(
+    client: TestClient, superuser_token_headers: dict[str, str], db: Session
+) -> None:
+    target_username = random_lower_string()[:12]
+    crud.create_user(
+        session=db,
+        user_create=UserCreate(
+            username=target_username,
+            password=random_lower_string(),
+            full_name="Target User",
+        ),
+    )
+    crud.create_user(
+        session=db,
+        user_create=UserCreate(
+            username=random_lower_string(), password=random_lower_string()
+        ),
+    )
+
+    r = client.get(
+        f"{settings.API_V1_STR}/users/",
+        params={
+            "common_search": '[{"field":"full_name","value":"Target","operator":"LIKE"}]'
+        },
+        headers=superuser_token_headers,
+    )
+
+    assert r.status_code == 200
+    data = r.json()
+    assert data["total"] == 1
+    assert data["data"][0]["full_name"] == "Target User"
+
+
+def test_retrieve_users_with_error_order_params(
+    client: TestClient, superuser_token_headers: dict[str, str]
+) -> None:
+    r = client.get(
+        f"{settings.API_V1_STR}/users/",
+        params={"order_by": random_lower_string()},
+        headers=superuser_token_headers,
+    )
+    assert r.status_code == 400
+    assert r.json()["detail"] == "Invalid order field"
+
+
 def test_update_user_me(client: TestClient, db: Session) -> None:
     full_name = "Updated Name"
     username = random_lower_string()

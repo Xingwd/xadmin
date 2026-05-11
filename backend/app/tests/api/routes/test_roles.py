@@ -3,6 +3,7 @@ from sqlmodel import Session
 
 from app.core.config import settings
 from app.tests.utils.role import create_random_role
+from app.tests.utils.utils import random_lower_string
 
 
 def test_create_role(
@@ -85,6 +86,64 @@ def test_read_roles(
     assert r.status_code == 200
     data = r.json()
     assert len(data["data"]) >= 2
+
+
+def test_read_roles_with_quick_search(
+    client: TestClient, superuser_token_headers: dict[str, str], db: Session
+) -> None:
+    prefix = random_lower_string()[:12]
+    matching_role = create_random_role(db, name=f"{prefix}_match")
+    create_random_role(db, name=random_lower_string())
+
+    r = client.get(
+        f"{settings.API_V1_STR}/roles/",
+        params={"quick_search": prefix},
+        headers=superuser_token_headers,
+    )
+
+    assert r.status_code == 200
+    data = r.json()
+    assert data["total"] == 1
+    assert data["data"][0]["id"] == matching_role.id
+
+
+def test_read_roles_with_pagination_and_order(
+    client: TestClient, superuser_token_headers: dict[str, str], db: Session
+) -> None:
+    prefix = random_lower_string()[:12]
+    names = [f"{prefix}_a", f"{prefix}_b", f"{prefix}_c"]
+    for name in names:
+        create_random_role(db, name=name)
+
+    r = client.get(
+        f"{settings.API_V1_STR}/roles/",
+        params={
+            "quick_search": prefix,
+            "skip": 2,
+            "limit": 1,
+            "order_by": "name",
+            "order_direction": "desc",
+        },
+        headers=superuser_token_headers,
+    )
+
+    assert r.status_code == 200
+    data = r.json()
+    assert data["total"] == 3
+    assert [role["name"] for role in data["data"]] == [names[1]]
+
+
+def test_read_roles_with_error_order_params(
+    client: TestClient, superuser_token_headers: dict[str, str]
+) -> None:
+    r = client.get(
+        f"{settings.API_V1_STR}/roles/",
+        params={"order_by": random_lower_string()},
+        headers=superuser_token_headers,
+    )
+
+    assert r.status_code == 400
+    assert r.json()["detail"] == "Invalid order field"
 
 
 def test_update_role(

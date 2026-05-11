@@ -4,6 +4,8 @@ import uuid
 from fastapi.testclient import TestClient
 
 from app.core.config import settings
+from app.crud import operation_log as crud
+from app.models.operation_log import OperationLogCreate
 from app.tests.utils.operation_log import create_random_operation_log
 from app.tests.utils.utils import random_lower_string
 
@@ -59,6 +61,65 @@ def test_read_operation_logs(
     assert r.status_code == 200
     data = r.json()
     assert len(data["data"]) >= 2
+
+
+def test_read_operation_logs_with_quick_search(
+    client: TestClient, superuser_token_headers: dict[str, str]
+) -> None:
+    prefix = random_lower_string()[:12]
+    matching_log = crud.create_operation_log(
+        OperationLogCreate(username=settings.FIRST_SUPERUSER, title=f"{prefix}_match")
+    )
+    crud.create_operation_log(
+        OperationLogCreate(
+            username=settings.FIRST_SUPERUSER, title=random_lower_string()
+        )
+    )
+
+    r = client.get(
+        f"{settings.API_V1_STR}/operation-logs/",
+        params={"quick_search": prefix},
+        headers=superuser_token_headers,
+    )
+
+    assert r.status_code == 200
+    data = r.json()
+    assert data["total"] == 1
+    assert data["data"][0]["id"] == str(matching_log.id)
+
+
+def test_read_operation_logs_with_common_search(
+    client: TestClient, superuser_token_headers: dict[str, str]
+) -> None:
+    prefix = random_lower_string()[:12]
+    matching_log = crud.create_operation_log(
+        OperationLogCreate(
+            username=f"{prefix}_user",
+            title=f"{prefix}_match",
+            response_status_code=500,
+        )
+    )
+    crud.create_operation_log(
+        OperationLogCreate(
+            username=f"{prefix}_user",
+            title=f"{prefix}_other",
+            response_status_code=200,
+        )
+    )
+
+    r = client.get(
+        f"{settings.API_V1_STR}/operation-logs/",
+        params={
+            "quick_search": prefix,
+            "common_search": '[{"field":"response_status_code","value":500,"operator":"eq"}]',
+        },
+        headers=superuser_token_headers,
+    )
+
+    assert r.status_code == 200
+    data = r.json()
+    assert data["total"] == 1
+    assert data["data"][0]["id"] == str(matching_log.id)
 
 
 def test_read_operation_logs_with_order_params(

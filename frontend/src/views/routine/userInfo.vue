@@ -3,7 +3,7 @@
         <el-row :gutter="30">
             <el-col class="lg-mb-20" :xs="24" :sm="24" :md="24" :lg="10">
                 <div class="user-info">
-                    <el-image fit="cover" :src="fullUrl('/static/images/avatar.png')" class="avatar">
+                    <el-image fit="cover" :src="fullUrl('/static/assets/images/avatar.png')" class="avatar">
                         <template #error>
                             <div class="image-slot">
                                 <Icon size="30" color="#c0c4cc" name="el-icon-Picture" />

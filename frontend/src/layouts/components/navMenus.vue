@@ -87,13 +87,13 @@
         >
             <template #reference>
                 <div class="user-info" :class="state.currentNavMenu == 'userInfo' ? 'hover' : ''">
-                    <el-avatar :size="25" :src="fullUrl('/static/images/avatar.png')"></el-avatar>
+                    <el-avatar :size="25" :src="fullUrl('/static/assets/images/avatar.png')"></el-avatar>
                     <div class="user-name">{{ userInfo.username }}</div>
                 </div>
             </template>
             <div>
                 <div class="user-info-base">
-                    <el-avatar :size="70" :src="fullUrl('/static/images/avatar.png')"></el-avatar>
+                    <el-avatar :size="70" :src="fullUrl('/static/assets/images/avatar.png')"></el-avatar>
                     <div class="user-info-other">
                         <div class="user-info-name">{{ userInfo.username }}</div>
                         <div class="user-info-lasttime">{{ timeFormat(userInfo.last_login_at) }}</div>

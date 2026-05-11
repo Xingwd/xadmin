@@ -27,6 +27,7 @@ import { defaultOptButtons } from '/@/components/table'
 import { useUserInfo } from '/@/stores/userInfo'
 import { useI18n } from 'vue-i18n'
 import { usersReadUsers, usersCreateUser, usersUpdateUser, usersDeleteUser } from '/@/client'
+import { cloneDeep } from 'lodash-es'
 
 defineOptions({
     name: 'system/user',
@@ -145,6 +146,7 @@ const xaTable = new XaTableClass(
     },
     {
         requestEdit: () => {
+            xaTable.form.items!.existingRoles = cloneDeep(xaTable.form.items!.roles)
             xaTable.form.items!.roles = xaTable.form.items!.roles.map((item: any) => item.id)
         },
     }
