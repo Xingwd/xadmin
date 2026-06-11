@@ -21,6 +21,16 @@ bun run dev
 
 检查文件 `package.json` 以查看其他可用选项。
 
+### 使用容器环境开发
+
+使用 Docker Compose 启动本地堆栈：
+
+```bash
+docker compose watch
+```
+
+请注意，此模式通过`vite --host 0.0.0.0`启动前端开发环境，请确保你知晓风险。
+
 ### 国际化语言包
 
 支持按需加载语言包，配置方式有两种：

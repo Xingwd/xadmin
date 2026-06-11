@@ -81,13 +81,27 @@ services:
   frontend:
     restart: "no"
     ports:
-      - "5173:80"
+      - "5173:5173"
     build:
       context: .
-      dockerfile: frontend/Dockerfile
+      dockerfile: frontend/Dockerfile.playwright
       args:
         - VITE_API_URL=http://localhost:8000
         - NODE_ENV=development
+    command:
+      - bun
+      - run
+      - dev-in-container
+    develop:
+      watch:
+        - path: ./frontend
+          action: sync
+          target: /app/frontend
+          ignore:
+            - ./frontend/node_modules
+            - ./node_modules
+        - path: ./frontend/package.json
+          action: rebuild
 
   playwright:
     build:

@@ -5,6 +5,7 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
+        "dev-in-container": "vite --host 0.0.0.0",
         "build": "tsc -p tsconfig.build.json && vite build",
         "lint": "eslint --fix .",
         "format": "bunx prettier --write .",
