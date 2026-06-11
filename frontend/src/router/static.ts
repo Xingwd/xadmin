@@ -63,10 +63,10 @@ const staticRoutes: Array<RouteRecordRaw> = [
         },
     },
     {
-        // 无权限访问
-        path: '/401',
+        // 403 无权限访问
+        path: '/403',
         name: 'noPower',
-        component: () => import('/@/views/common/error/401.vue'),
+        component: () => import('/@/views/common/error/403.vue'),
         meta: {
             title: pageTitle('noPower'),
         },

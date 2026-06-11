@@ -4,7 +4,7 @@ import { cloneDeep, isEmpty } from 'lodash-es'
 import { computed, ComputedRef, reactive } from 'vue'
 import { useRoute } from 'vue-router'
 import { auth, getArrayKey } from '/@/utils/common'
-import { httpStatusHandle, isSuccess } from '/@/utils/request'
+import { httpStatusHandle } from '/@/utils/request'
 import type { UseMutationReturn, UseQueryReturn } from '@pinia/colada'
 import { useMutation, useQuery, useQueryCache } from '@pinia/colada'
 
@@ -115,7 +115,7 @@ export default class XaTable {
         if (this.runBefore('index') === false) return
         this.indexQueryReturn = useQuery({
             key: this.queryKey,
-            query: () => this.api.index({ query: this.table.query }),
+            query: () => this.api.index(this.table.query),
             placeholderData: (previousData) => previousData,
         })
         this.runAfter('index')
@@ -127,13 +127,10 @@ export default class XaTable {
 
         ids.forEach((id, index, array) => {
             this.delMutationReturn = useMutation({
-                mutation: () => this.api.del!({ path: { [this.table.pk!]: id } }),
+                mutation: () => this.api.del!({ [this.table.pk!]: id }),
                 onSuccess: (data, _vars, _context) => {
                     httpStatusHandle(data)
-                    const status = (data as anyObj).status
-                    if (status && typeof status === 'number' && isSuccess(status)) {
-                        this.runAfter('del')
-                    }
+                    this.runAfter('del')
                 },
                 onError: (error) => {
                     console.error(error)
@@ -203,14 +200,11 @@ export default class XaTable {
         const submitCallback = () => {
             if (operate == 'Add' && typeof this.api.add == 'function') {
                 this.addMutationReturn = useMutation({
-                    mutation: () => this.api.add!({ body: this.form.items! }),
+                    mutation: () => this.api.add!({ requestBody: this.form.items! }),
                     onSuccess: (data, _vars, _context) => {
                         httpStatusHandle(data)
-                        const status = (data as anyObj).status
-                        if (status && typeof status === 'number' && isSuccess(status)) {
-                            this.toggleForm()
-                            this.runAfter('onSubmit')
-                        }
+                        this.toggleForm()
+                        this.runAfter('onSubmit')
                     },
                     onError: (error) => {
                         console.error(error)
@@ -223,19 +217,16 @@ export default class XaTable {
                 this.addMutationReturn.mutate()
             } else if (operate == 'Edit' && typeof this.api.edit == 'function') {
                 this.editMutationReturn = useMutation({
-                    mutation: () => this.api.edit!({ path: { [this.table.pk!]: this.form.operateRows![0][this.table.pk!] }, body: this.form.items! }),
+                    mutation: () => this.api.edit!({ [this.table.pk!]: this.form.operateRows![0][this.table.pk!], requestBody: this.form.items! }),
                     onSuccess: (data, _vars, _context) => {
                         httpStatusHandle(data)
-                        const status = (data as anyObj).status
-                        if (status && typeof status === 'number' && isSuccess(status)) {
-                            this.form.operateRows?.shift()
-                            if (this.form.operateRows!.length > 0) {
-                                this.toggleForm('Edit', this.form.operateRows)
-                            } else {
-                                this.toggleForm()
-                            }
-                            this.runAfter('onSubmit')
+                        this.form.operateRows?.shift()
+                        if (this.form.operateRows!.length > 0) {
+                            this.toggleForm('Edit', this.form.operateRows)
+                        } else {
+                            this.toggleForm()
                         }
+                        this.runAfter('onSubmit')
                     },
                     onError: (error) => {
                         console.error(error)
@@ -290,12 +281,12 @@ export default class XaTable {
                 'sort-change',
                 () => {
                     const newOrder: anyObj = {}
-                    if (data.order_by) {
-                        if (data.order_by != this.table.query!.order_by) {
-                            newOrder.order_by = data.order_by
+                    if (data.orderBy) {
+                        if (data.orderBy != this.table.query!.orderBy) {
+                            newOrder.orderBy = data.orderBy
                         }
-                        if (data.order_direction && data.order_direction != this.table.query!.order_direction) {
-                            newOrder.order_direction = data.order_direction
+                        if (data.orderDirection && data.orderDirection != this.table.query!.orderDirection) {
+                            newOrder.orderDirection = data.orderDirection
                         }
                         this.table.query = Object.assign(this.table.query as anyObj, newOrder)
                     }
@@ -317,7 +308,7 @@ export default class XaTable {
             [
                 'common-search',
                 () => {
-                    this.table.query!.common_search = this.getCommonSearchParamValue(this.getCommonSearchData())
+                    this.table.query!.commonSearch = this.getCommonSearchParamValue(this.getCommonSearchData())
                 },
             ],
             [
@@ -414,8 +405,8 @@ export default class XaTable {
             this.setCommonSearchData(route.query)
 
             // 获取通用搜索数据合并至表格筛选条件
-            this.table.query!.common_search = this.getCommonSearchParamValue(
-                this.getCommonSearchData().concat(JSON.parse(this.table.query?.common_search ?? '[]'))
+            this.table.query!.commonSearch = this.getCommonSearchParamValue(
+                this.getCommonSearchData().concat(JSON.parse(this.table.query?.commonSearch ?? '[]'))
             )
         }
         this.index()

@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { reactive, ref, watch } from 'vue'
 import { useConfig } from '/@/stores/config'
 import { useNavTabs } from '/@/stores/navTabs'
 import { useSiteConfig } from '/@/stores/siteConfig'
@@ -21,8 +21,8 @@ import { useEventListener } from '@vueuse/core'
 import { BEFORE_RESIZE_LAYOUT } from '/@/stores/constant/cacheKey'
 import { isEmpty } from 'lodash-es'
 import { setNavTabsWidth } from '/@/utils/layout'
-import { isLoggedIn } from '/@/utils/useAuth'
-import { usersReadUserMe } from '/@/client'
+import useAuth, { isLoggedIn } from '/@/utils/useAuth'
+import { ApiError } from '/@/client'
 
 defineOptions({
     components: { Default, Classic, Streamline, Double },
@@ -38,9 +38,50 @@ const state = reactive({
     autoMenuCollapseLock: false,
 })
 
-onMounted(async () => {
-    if (!(await isLoggedIn())) return router.push({ name: 'login' })
-    init()
+const { user: currentUser, userQueryError } = useAuth()
+
+const initialized = ref(false)
+
+watch(currentUser, (newVal) => {
+    if (!newVal || initialized.value) return
+    initialized.value = true
+
+    userInfo.dataFill(newVal)
+    siteConfig.setUserInitialize(true)
+
+    if (newVal?.rules) {
+        handleRoute(newVal.rules)
+
+        // 预跳转到上次路径
+        if (route.params.to) {
+            const lastRoute = JSON.parse(route.params.to as string)
+            if (lastRoute.path != '/') {
+                let query = !isEmpty(lastRoute.query) ? lastRoute.query : {}
+                routePush({ path: lastRoute.path, query: query })
+                return
+            }
+        }
+
+        // 跳转到第一个菜单
+        let firstRoute = getFirstRoute(navTabs.state.tabsViewRoutes)
+        if (firstRoute) routePush(firstRoute.path)
+    }
+})
+
+watch(userQueryError, (err) => {
+    if (err instanceof ApiError && err.status === 401) {
+        router.push({ path: '/401' })
+    }
+})
+
+onMounted(() => {
+    if (!isLoggedIn()) return router.push({ name: 'login' })
+
+    siteConfig.dataFill({
+        siteName: import.meta.env.VITE_SITE_NAME,
+        userInitialize: false,
+    })
+
     setNavTabsWidth()
     useEventListener(window, 'resize', setNavTabsWidth)
 })
@@ -48,42 +89,6 @@ onBeforeMount(() => {
     onAdaptiveLayout()
     useEventListener(window, 'resize', onAdaptiveLayout)
 })
-
-const init = () => {
-    siteConfig.dataFill({
-        siteName: import.meta.env.VITE_SITE_NAME,
-        userInitialize: false,
-    })
-    /**
-     * 后台初始化请求，动态路由等信息
-     */
-    usersReadUserMe().then((res) => {
-        if (res.data) {
-            userInfo.dataFill(res.data)
-            siteConfig.setUserInitialize(true)
-
-            if (res.data?.rules) {
-                handleRoute(res.data.rules)
-
-                // 预跳转到上次路径
-                if (route.params.to) {
-                    const lastRoute = JSON.parse(route.params.to as string)
-                    if (lastRoute.path != '/') {
-                        let query = !isEmpty(lastRoute.query) ? lastRoute.query : {}
-                        routePush({ path: lastRoute.path, query: query })
-                        return
-                    }
-                }
-
-                // 跳转到第一个菜单
-                let firstRoute = getFirstRoute(navTabs.state.tabsViewRoutes)
-                if (firstRoute) routePush(firstRoute.path)
-            }
-        } else if (res.status == 401) {
-            router.push({ path: '/401' })
-        }
-    })
-}
 
 const onAdaptiveLayout = () => {
     let defaultBeforeResizeLayout = {

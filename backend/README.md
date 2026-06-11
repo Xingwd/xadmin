@@ -37,7 +37,7 @@ source .venv/bin/activate
 
 ## Docker Compose Override
 
-在开发过程中，你可以在文件 `docker-compose.override.yml` 中更改仅影响本地开发环境的 Docker Compose 设置。
+在开发过程中，你可以在文件 `compose.override.yml` 中更改仅影响本地开发环境的 Docker Compose 设置。
 
 对该文件的更改仅影响本地开发环境，而非生产环境。因此，你可以添加有助于开发工作流程的“临时”更改。
 
@@ -107,7 +107,7 @@ Security(get_current_user, scopes=[ApiPermissions.V1_RULES.value.read.name])
 bash ./scripts/test.sh
 ```
 
-这些测试使用 Pytest 运行，修改并向 `./backend/app/tests/` 添加测试。
+这些测试使用 Pytest 运行，修改并向 `./backend/tests/` 添加测试。
 
 ### 测试运行中的堆栈
 

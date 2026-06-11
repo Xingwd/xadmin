@@ -42,7 +42,7 @@
                         :input-attr="{
                             field: 'username',
                             remoteQueryKey: 'users',
-                            remoteQuery: usersReadUsers,
+                            remoteQuery: UsersService.readUsers,
                             initOptions: xaTable.form.items!.existingUsers,
                             multiple: true,
                             placeholder: t('Click select'),
@@ -57,7 +57,7 @@
                             show-checkbox
                             node-key="id"
                             :props="{ children: 'children', label: 'title', class: treeNodeClass }"
-                            :data="ruleTrees?.data?.data"
+                            :data="ruleTrees?.data"
                             class="w100"
                         />
                     </el-form-item>
@@ -120,7 +120,7 @@ import { buildValidatorData } from '/@/utils/validate'
 import { timeFormat } from '/@/utils/common'
 import type Node from 'element-plus/es/components/tree/src/model/node'
 import { useConfig } from '/@/stores/config'
-import { usersReadUsers, rulesReadRules } from '/@/client'
+import { UsersService, RulesService } from '/@/client'
 import { useQuery } from '@pinia/colada'
 
 const config = useConfig()
@@ -136,7 +136,7 @@ const rules: Partial<Record<string, FormItemRule[]>> = reactive({
 
 const { data: ruleTrees } = useQuery({
     key: ['rules'],
-    query: () => rulesReadRules(),
+    query: () => RulesService.readRules(),
     placeholderData: (previousData) => previousData,
 })
 

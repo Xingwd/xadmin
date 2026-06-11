@@ -1,17 +1,33 @@
-import { defineConfig, defaultPlugins } from '@hey-api/openapi-ts'
+import { defineConfig } from '@hey-api/openapi-ts'
 
 export default defineConfig({
     input: './openapi.json',
-    output: {
-        path: 'src/client',
-        format: 'prettier',
-        lint: 'eslint',
-    },
+    output: './src/client',
+
     plugins: [
-        ...defaultPlugins,
+        'legacy/axios',
         {
-            name: '@hey-api/client-axios',
-            runtimeConfigPath: './src/hey-api.ts',
+            name: '@hey-api/sdk',
+            // NOTE: this doesn't allow tree-shaking
+            asClass: true,
+            operationId: true,
+            classNameBuilder: '{{name}}Service',
+            methodNameBuilder: (operation) => {
+                // @ts-expect-error - operation.name is not typed in the current version of openapi-ts
+                let name: string = operation.name
+                // @ts-expect-error - operation.service is not typed in the current version of openapi-ts
+                const service: string = operation.service
+
+                if (service && name.toLowerCase().startsWith(service.toLowerCase())) {
+                    name = name.slice(service.length)
+                }
+
+                return name.charAt(0).toLowerCase() + name.slice(1)
+            },
+        },
+        {
+            name: '@hey-api/schemas',
+            type: 'json',
         },
     ],
 })

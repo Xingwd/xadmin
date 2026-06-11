@@ -74,8 +74,8 @@ const xaTable = inject('xaTable') as XaTableClass
 const { data: indexQueryData, isLoading: indexQueryIsLoading } = xaTable.indexQueryReturn
 const queryData = computed(() => {
     return {
-        data: (indexQueryData.value as anyObj)?.data.data,
-        total: (indexQueryData.value as anyObj)?.data.total ?? 0,
+        data: (indexQueryData.value as anyObj)?.data,
+        total: (indexQueryData.value as anyObj)?.total ?? 0,
     }
 })
 type ElTableProps = Partial<InstanceType<typeof ElTable>['$props']>
@@ -102,7 +102,7 @@ const getRenderKey = (key: number, item: TableColumn, scope: any) => {
 }
 
 const onSortChange = ({ order, prop }: { order: string; prop: string }) => {
-    xaTable.onTableAction('sort-change', { order_by: prop, order_direction: order ? (order == 'ascending' ? 'asc' : 'desc') : '' })
+    xaTable.onTableAction('sort-change', { orderBy: prop, orderDirection: order ? (order == 'ascending' ? 'asc' : 'desc') : '' })
 }
 
 const pageSizes = computed(() => {

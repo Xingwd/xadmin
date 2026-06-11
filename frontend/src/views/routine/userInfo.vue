@@ -56,7 +56,7 @@
                 <el-card :header="t('routine.userInfo.Operation log')" shadow="never">
                     <el-timeline>
                         <el-timeline-item
-                            v-for="(item, idx) in userOperationLogs?.data?.data"
+                            v-for="(item, idx) in userOperationLogs?.data"
                             :key="idx"
                             size="large"
                             :timestamp="timeFormat(item.created_at)"
@@ -70,7 +70,7 @@
                         :page-sizes="[12, 22, 52, 100]"
                         background
                         layout="prev, next, jumper"
-                        :total="userOperationLogs?.data?.total ?? 0"
+                        :total="userOperationLogs?.total ?? 0"
                     ></el-pagination>
                 </el-card>
             </el-col>
@@ -79,16 +79,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { FormInstance, FormItemRule } from 'element-plus'
 import { fullUrl, onResetForm, timeFormat, auth } from '/@/utils/common'
 import { uuid } from '/@/utils/random'
 import { buildValidatorData } from '/@/utils/validate'
 import { useUserInfo } from '/@/stores/userInfo'
-import { usersReadUserMe, usersReadUserOperationLogs, usersUpdateUserMe } from '/@/client'
+import { UsersService } from '/@/client'
 import { useMutation, useQuery } from '@pinia/colada'
 import { httpStatusHandle, isSuccess } from '/@/utils/request'
+import useAuth from '/@/utils/useAuth'
 
 defineOptions({
     name: 'routine/userInfo',
@@ -96,6 +97,8 @@ defineOptions({
 
 const { t } = useI18n()
 const formRef = ref<FormInstance>()
+
+const { user: currentUser } = useAuth()
 
 const userInfo = useUserInfo()
 
@@ -112,11 +115,17 @@ const state: {
     },
 })
 
-usersReadUserMe().then((res) => {
-    state.userInfo = { ...res.data }
-    // 重新渲染表单以记录初始值
-    state.formKey = uuid()
-})
+watch(
+    () => currentUser.value,
+    (user) => {
+        if (user) {
+            state.userInfo = { ...user }
+            // 重新渲染表单以记录初始值
+            state.formKey = uuid()
+        }
+    },
+    { immediate: true }
+)
 
 const rules: Partial<Record<string, FormItemRule[]>> = reactive({
     full_name: [buildValidatorData({ name: 'required', title: t('system.users.Full name') })],
@@ -125,8 +134,8 @@ const rules: Partial<Record<string, FormItemRule[]>> = reactive({
 
 const { mutate: updateUserMeMutate, isLoading: updateUserMeLoading } = useMutation({
     mutation: () =>
-        usersUpdateUserMe({
-            body: { full_name: state.userInfo.full_name, password: state.userInfo.password === '' ? undefined : state.userInfo.password },
+        UsersService.updateUserMe({
+            requestBody: { full_name: state.userInfo.full_name, password: state.userInfo.password === '' ? undefined : state.userInfo.password },
         }),
     onSuccess: (data, _vars, _context) => {
         httpStatusHandle(data)
@@ -151,7 +160,7 @@ const onSubmit = () => {
 
 const { data: userOperationLogs, isLoading: userOperationLogsLoading } = useQuery({
     key: ['users', 'operation-logs', state.logQuery],
-    query: () => usersReadUserOperationLogs({ query: state.logQuery }),
+    query: () => UsersService.readUserOperationLogs(state.logQuery),
     placeholderData: (previousData) => previousData,
 })
 </script>

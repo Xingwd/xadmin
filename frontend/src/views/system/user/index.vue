@@ -26,7 +26,7 @@ import TableHeader from '/@/components/table/header/index.vue'
 import { defaultOptButtons } from '/@/components/table'
 import { useUserInfo } from '/@/stores/userInfo'
 import { useI18n } from 'vue-i18n'
-import { usersReadUsers, usersCreateUser, usersUpdateUser, usersDeleteUser } from '/@/client'
+import { UsersService } from '/@/client'
 import { cloneDeep } from 'lodash-es'
 
 defineOptions({
@@ -44,10 +44,10 @@ optButtons[1].display = (row) => {
 const xaTable = new XaTableClass(
     {
         queryKey: 'users',
-        index: usersReadUsers,
-        add: usersCreateUser,
-        edit: usersUpdateUser,
-        del: usersDeleteUser,
+        index: UsersService.readUsers,
+        add: UsersService.createUser,
+        edit: UsersService.updateUser,
+        del: UsersService.deleteUser,
     },
     {
         column: [

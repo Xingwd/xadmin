@@ -3,7 +3,9 @@
 set -e
 set -x
 
-# 生成openapi.json
-(cd backend && python -c "import app.main; import json; print(json.dumps(app.main.app.openapi()))" > ../frontend/openapi.json)
-# 生成客户端
-(cd frontend && pnpm run generate-client)
+cd backend
+uv run python -c "import app.main; import json; print(json.dumps(app.main.app.openapi()))" > ../openapi.json
+cd ..
+mv openapi.json frontend/
+bun run --filter frontend generate-client
+bun run lint

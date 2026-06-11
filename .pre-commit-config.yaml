@@ -1,0 +1,78 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c # v6.0.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-toml
+      - id: check-yaml
+        args:
+          - --unsafe
+      - id: end-of-file-fixer
+        exclude: |
+            (?x)^(
+                frontend/src/client/.*
+            )$
+      - id: trailing-whitespace
+        exclude: ^frontend/src/client/.*
+  - repo: local
+    hooks:
+      - id: local-eslint-lint
+        name: eslint fix
+        entry: bash -c 'cd frontend && bun run lint'
+        language: system
+        types: [text]
+        files: ^frontend/
+        pass_filenames: false
+
+      - id: local-prettier-format
+        name: prettier format
+        entry: bash -c 'cd frontend && bun run format'
+        language: system
+        types: [text]
+        files: ^frontend/
+        pass_filenames: false
+
+      - id: local-vue-tsc-typecheck
+        name: vue-tsc typecheck
+        entry: bash -c 'cd frontend && bun run typecheck'
+        language: system
+        types: [text]
+        files: ^frontend/
+        pass_filenames: false
+
+      - id: local-ruff-check
+        name: ruff check
+        entry: uv run ruff check --force-exclude --fix --exit-non-zero-on-fix
+        require_serial: true
+        language: unsupported
+        types: [python]
+
+      - id: local-ruff-format
+        name: ruff format
+        entry: uv run ruff format --force-exclude --exit-non-zero-on-format
+        require_serial: true
+        language: unsupported
+        types: [python]
+
+      - id: local-mypy
+        name: mypy check
+        entry: uv run mypy backend/app
+        require_serial: true
+        language: unsupported
+        pass_filenames: false
+
+      - id: local-ty
+        name: ty check
+        entry: uv run ty check backend/app
+        require_serial: true
+        language: unsupported
+        pass_filenames: false
+
+      - id: generate-frontend-sdk
+        name: Generate Frontend SDK
+        entry: bash ./scripts/generate-client.sh
+        pass_filenames: false
+        language: unsupported
+        files: ^backend/.*$|^scripts/generate-client\.sh$

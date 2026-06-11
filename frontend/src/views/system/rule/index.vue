@@ -24,7 +24,7 @@ import TableHeader from '/@/components/table/header/index.vue'
 import { defaultOptButtons } from '/@/components/table'
 import { useI18n } from 'vue-i18n'
 import XaTableClass from '/@/utils/xaTable'
-import { rulesReadRules, rulesCreateRule, rulesUpdateRule, rulesDeleteRule } from '/@/client'
+import { RulesService } from '/@/client'
 
 defineOptions({
     name: 'system/rule',
@@ -35,10 +35,10 @@ const tableRef = ref()
 const xaTable = new XaTableClass(
     {
         queryKey: 'rules',
-        index: rulesReadRules,
-        add: rulesCreateRule,
-        edit: rulesUpdateRule,
-        del: rulesDeleteRule,
+        index: RulesService.readRules,
+        add: RulesService.createRule,
+        edit: RulesService.updateRule,
+        del: RulesService.deleteRule,
     },
     {
         expandAll: false,
@@ -93,7 +93,7 @@ const xaTable = new XaTableClass(
     },
     {
         index: () => {
-            xaTable.table.expandAll = xaTable.table.query?.quick_search ? true : false
+            xaTable.table.expandAll = xaTable.table.query?.quickSearch ? true : false
         },
         onTableDblclick: (): boolean => {
             return xaTable.auth('edit')

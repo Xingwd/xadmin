@@ -19,10 +19,10 @@ declare global {
         query?: {
             skip?: number
             limit?: number
-            order_by?: string
-            order_direction?: 'asc' | 'desc'
-            quick_search?: string
-            common_search?: string
+            orderBy?: string
+            orderDirection?: 'asc' | 'desc'
+            quickSearch?: string
+            commonSearch?: string
             [key: string]: any
         }
         // 接受 url 的 query 参数并自动触发通用搜索

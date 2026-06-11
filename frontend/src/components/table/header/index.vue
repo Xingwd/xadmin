@@ -167,7 +167,7 @@ const onAction = (event: string, data: anyObj = {}) => {
 }
 
 const onSearchInput = debounce(() => {
-    xaTable.table.query!.quick_search = state.quickSearch
+    xaTable.table.query!.quickSearch = state.quickSearch
 }, 800)
 
 const onChangeShowColumn = (value: string | number | boolean, field: string) => {
