@@ -25,7 +25,7 @@ import { defaultOptButtons } from '/@/components/table'
 import { useI18n } from 'vue-i18n'
 import Info from './info.vue'
 import { buildJsonToElTreeData } from '/@/utils/common'
-import { operationLogsReadOperationLogs, operationLogsDeleteOperationLog } from '/@/client'
+import { OperationLogsService } from '/@/client'
 
 defineOptions({
     name: 'system/operationLog',
@@ -54,8 +54,8 @@ optButtons = concat(optButtons, defaultOptButtons(['delete']))
 const xaTable = new XaTableClass(
     {
         queryKey: 'operation-logs',
-        index: operationLogsReadOperationLogs,
-        del: operationLogsDeleteOperationLog,
+        index: OperationLogsService.readOperationLogs,
+        del: OperationLogsService.deleteOperationLog,
     },
     {
         column: [

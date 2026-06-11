@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { USER_INFO } from '/@/stores/constant/cacheKey'
-import type { UserMePublic } from '/@/client/types.gen'
+import type { UserMePublic } from '/@/client'
 
 export const useUserInfo = defineStore('userInfo', {
     state: (): UserMePublic => {

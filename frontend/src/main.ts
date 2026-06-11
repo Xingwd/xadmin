@@ -12,7 +12,26 @@ import 'element-plus/dist/index.css'
 import 'element-plus/theme-chalk/display.css'
 import 'font-awesome/css/font-awesome.min.css'
 import '/@/styles/index.scss'
+import { getUrl } from './utils/request.ts'
+import { OpenAPI } from './client/index.ts'
+import { Local } from './utils/storage.ts'
+import { ACCESS_TOKEN } from './stores/constant/cacheKey.ts'
 // modules import mark, Please do not remove.
+
+OpenAPI.BASE = getUrl()
+OpenAPI.TOKEN = async () => {
+    return Local.get(ACCESS_TOKEN) || ''
+}
+
+OpenAPI.interceptors.response.use((response) => {
+    if (response.status === 401) {
+        Local.remove(ACCESS_TOKEN)
+        router.push({ name: 'login' })
+    } else if (response.status === 403) {
+        router.push({ name: 'noPower' })
+    }
+    return response
+})
 
 async function start() {
     const app = createApp(App)

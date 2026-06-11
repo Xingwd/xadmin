@@ -1,41 +1,41 @@
-import { useMutation } from '@pinia/colada'
+import { useMutation, useQuery } from '@pinia/colada'
+import { ElMessage } from 'element-plus'
 import router from '/@/router'
-import { BodyLoginAccessToken, loginAccessToken, loginTestToken } from '/@/client'
+import { LoginAccessTokenData, LoginService, UsersService } from '/@/client'
 import { Local } from '/@/utils/storage'
 import { ACCESS_TOKEN } from '/@/stores/constant/cacheKey'
-import { isSuccess } from '/@/utils/request'
+import { useNavTabs } from '/@/stores/navTabs'
 
-const isLoggedIn = async () => {
-    if (Local.get(ACCESS_TOKEN) !== null) {
-        await loginTestToken().then((res) => {
-            const status = res.status
-            if (status && typeof status === 'number' && !isSuccess(status)) {
-                Local.remove(ACCESS_TOKEN)
-            }
-        })
-    }
+const isLoggedIn = () => {
     return Local.get(ACCESS_TOKEN) !== null
 }
 
 const useAuth = () => {
-    const login = async (data: BodyLoginAccessToken) => {
-        const res = await loginAccessToken({ body: data })
-        if (res.data) {
-            Local.set(ACCESS_TOKEN, res.data.access_token)
-        }
+    const { data: user, error: userQueryError } = useQuery({
+        key: ['users', 'me'],
+        query: () => UsersService.readUserMe(),
+        enabled: isLoggedIn(),
+    })
+
+    const login = async (data: LoginAccessTokenData) => {
+        const res = await LoginService.accessToken(data)
+        Local.set(ACCESS_TOKEN, res.access_token)
     }
 
     const loginMutation = useMutation({
         mutation: login,
         onSuccess: () => {
+            useNavTabs().closeAllTab()
             router.push({ name: '/' })
         },
-        onError: (error) => {
-            console.log(error)
+        onError: (error: any) => {
+            const msg = error.body?.detail || error.message || 'Login failed'
+            ElMessage.error(msg)
         },
     })
 
     const logout = () => {
+        useNavTabs().closeAllTab()
         Local.remove(ACCESS_TOKEN)
         router.push({ name: 'login' })
     }
@@ -43,6 +43,8 @@ const useAuth = () => {
     return {
         loginMutation,
         logout,
+        user,
+        userQueryError,
     }
 }
 

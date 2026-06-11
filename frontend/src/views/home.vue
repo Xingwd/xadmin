@@ -92,7 +92,7 @@ import { useConfig } from '/@/stores/config'
 import { useNavTabs } from '/@/stores/navTabs'
 import { RouteRecordRaw } from 'vue-router'
 import { useQuery } from '@pinia/colada'
-import { usersReadUserHome } from '/@/client'
+import { UsersService } from '/@/client'
 import { onClickMenu } from '/@/utils/router'
 
 let workTimer: number
@@ -220,23 +220,23 @@ const formatSeconds = (seconds: number) => {
 
 const { data } = useQuery({
     key: ['users', 'home'],
-    query: () => usersReadUserHome(),
+    query: () => UsersService.readUserHome(),
     placeholderData: (previousData) => previousData,
 })
 
 const homeData = computed(() => {
     return {
-        logins_1w: data.value?.data?.logins_1w ?? 0,
-        previous_logins_1w: data.value?.data?.previous_logins_1w ?? 0,
-        logins_1m: data.value?.data?.logins_1m ?? 0,
-        previous_logins_1m: data.value?.data?.previous_logins_1m ?? 0,
-        operations_1w: data.value?.data?.operations_1w ?? 0,
-        previous_operations_1w: data.value?.data?.previous_operations_1w ?? 0,
-        operations_1m: data.value?.data?.operations_1m ?? 0,
-        previous_operations_1m: data.value?.data?.previous_operations_1m ?? 0,
-        behavior_1w: data.value?.data?.behavior_1w ?? [],
-        behavior_1m: data.value?.data?.behavior_1m ?? [],
-        menus: data.value?.data?.menus ?? [],
+        logins_1w: data.value?.logins_1w ?? 0,
+        previous_logins_1w: data.value?.previous_logins_1w ?? 0,
+        logins_1m: data.value?.logins_1m ?? 0,
+        previous_logins_1m: data.value?.previous_logins_1m ?? 0,
+        operations_1w: data.value?.operations_1w ?? 0,
+        previous_operations_1w: data.value?.previous_operations_1w ?? 0,
+        operations_1m: data.value?.operations_1m ?? 0,
+        previous_operations_1m: data.value?.previous_operations_1m ?? 0,
+        behavior_1w: data.value?.behavior_1w ?? [],
+        behavior_1m: data.value?.behavior_1m ?? [],
+        menus: data.value?.menus ?? [],
     }
 })
 

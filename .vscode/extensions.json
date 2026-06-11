@@ -1,0 +1,15 @@
+{
+    "recommendations": [
+        "FastAPILabs.fastapi-vscode",
+        "astral-sh.ty",
+        "charliermarsh.ruff",
+        "docker.docker",
+        "mjmlio.vscode-mjml",
+        "ms-playwright.playwright",
+        "ms-python.python",
+        "tombi-toml.tombi",
+        "Vue.volar",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint"
+    ]
+}

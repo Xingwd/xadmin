@@ -25,7 +25,7 @@ import TableHeader from '/@/components/table/header/index.vue'
 import Table from '/@/components/table/index.vue'
 import XaTableClass from '/@/utils/xaTable'
 import { uuid } from '/@/utils/random'
-import { rolesReadRoles, rolesCreateRole, rolesUpdateRole, rolesDeleteRole } from '/@/client'
+import { RolesService } from '/@/client'
 
 defineOptions({
     name: 'system/role',
@@ -53,10 +53,10 @@ optButtons = optButtons.concat(defaultOptButtons(['edit', 'delete']))
 const xaTable = new XaTableClass(
     {
         queryKey: 'roles',
-        index: rolesReadRoles,
-        add: rolesCreateRole,
-        edit: rolesUpdateRole,
-        del: rolesDeleteRole,
+        index: RolesService.readRoles,
+        add: RolesService.createRole,
+        edit: RolesService.updateRole,
+        del: RolesService.deleteRole,
     },
     {
         column: [

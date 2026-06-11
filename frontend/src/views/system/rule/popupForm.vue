@@ -37,7 +37,7 @@
                             field: 'title',
                             params: { only_menus: true },
                             remoteQueryKey: 'rules',
-                            remoteQuery: rulesReadRules,
+                            remoteQuery: RulesService.readRules,
                         }"
                     />
                     <FormItem
@@ -72,7 +72,7 @@
                             field: 'name',
                             params: { unassigned: true },
                             remoteQueryKey: 'rules/permissions',
-                            remoteQuery: rulesReadPermissions,
+                            remoteQuery: RulesService.readPermissions,
                         }"
                         :attr="{
                             blockHelp: t(
@@ -198,7 +198,7 @@ import FormItem from '/@/components/formItem/index.vue'
 import { buildValidatorData } from '/@/utils/validate'
 import type { FormInstance, FormItemRule } from 'element-plus'
 import { useConfig } from '/@/stores/config'
-import { rulesReadRules, rulesReadPermissions } from '/@/client'
+import { RulesService } from '/@/client'
 
 const config = useConfig()
 const formRef = ref<FormInstance>()

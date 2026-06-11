@@ -9,6 +9,7 @@ def authenticate(*, session: Session, username: str, password: str) -> User | No
     db_user = get_user_by_username(session=session, username=username)
     if not db_user:
         return None
-    if not verify_password(password, db_user.hashed_password):
+    verified, _ = verify_password(password, db_user.hashed_password)
+    if not verified:
         return None
     return db_user

@@ -13,7 +13,7 @@ export default [
 
     // 忽略规则
     {
-        ignores: ['node_modules', 'dist', 'public'],
+        ignores: ['node_modules', 'dist', 'public', 'src/client'],
     },
 
     // 全局变量
@@ -97,12 +97,7 @@ export default [
     {
         files: ['**/*.{ts,tsx,vue,js}'],
         rules: {
-            'prettier/prettier': [
-                'warn', // 使用警告而不是错误
-                {
-                    endOfLine: 'auto', // eslint 无需检查文件换行符
-                },
-            ],
+            'prettier/prettier': 'warn',
         },
     },
 ]

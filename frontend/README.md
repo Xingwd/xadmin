@@ -2,56 +2,17 @@
 
 前端使用 [Vite](https://vitejs.dev/)、[Vue](https://vuejs.org)、[Vue Router](https://router.vuejs.org/)、[TypeScript](https://www.typescriptlang.org/)、[Pinia](https://pinia.vuejs.org/)、[Pinia Colada](https://pinia-colada.esm.dev/) 和 [Element Plus](https://element-plus.org) 构建。
 
-## 前端开发
+## 开发前提
 
-### 使用本地环境开发
+- [Bun](https://bun.sh/) (推荐) 或 [Node.js](https://nodejs.org/)
 
-在开始之前，请确保你的系统上安装了 Node Version Manager（nvm）或 Fast Node Manager（fnm）。
+## 快速开始
 
-- 要安装 `fnm`，请遵循 [official fnm guide](https://github.com/Schniz/fnm#installation)。如果你更喜欢 `nvm`，可以遵循 [official nvm guide](https://github.com/nvm-sh/nvm#installing-and-updating) 进行安装。
-
-- 安装 `nvm` 或 `fnm` 后，进入 `frontend` 目录：
+进入frontend目录，执行：
 
 ```bash
-cd frontend
-```
-
-- 如果 `.nvmrc` 文件中指定的 Node.js 版本未安装在你的系统上，你可以使用适当的命令安装它：
-
-```bash
-# If using fnm
-fnm install
-
-# If using nvm
-nvm install
-```
-
-- 一旦安装完成，切换到已安装的版本：
-
-```bash
-# If using fnm
-fnm use
-
-# If using nvm
-nvm use
-```
-
-- 安装 [pnpm](https://pnpm.io)：
-
-```bash
-npm install -g pnpm@latest-10
-```
-
-- 在 `frontend` 目录中，安装必要的 NPM 包：
-
-```bash
-pnpm install
-```
-
-- 并使用以下 `pnpm` 脚本启动实时服务器：
-
-```bash
-pnpm run dev
+bun install
+bun run dev
 ```
 
 - 然后在浏览器打开 <http://localhost:5173/>。
@@ -68,7 +29,7 @@ pnpm run dev
 docker compose watch
 ```
 
-**注意**：此命令启动的前端开发环境，使用的指令是 `vite --host 0.0.0.0`。
+请注意，此模式通过`vite --host 0.0.0.0`启动前端开发环境，请确保你知晓风险。
 
 ### 国际化语言包
 
@@ -91,9 +52,9 @@ docker compose watch
 
 - 删除 `./frontend` 目录。
 
-- 在 `docker-compose.yml` 文件，删除整个 `frontend` 服务/部分。
+- 在 `compose.yml` 文件，删除整个 `frontend` 服务/部分。
 
-- 在 `docker-compose.override.yml` 文件，删除整个 `frontend` 服务/部分。
+- 在 `compose.override.yml` 文件，删除整个 `frontend` 服务/部分。
 
 完成后，你拥有了一个没有前端（仅 API）的应用程序。🤓
 
@@ -114,7 +75,7 @@ docker compose watch
 - 从项目顶级目录运行以下脚本：
 
 ```bash
-./scripts/generate-client.sh
+bash ./scripts/generate-client.sh
 ```
 
 - 提交更改。
@@ -128,7 +89,7 @@ docker compose watch
 - 生成前端客户端，请运行：
 
 ```bash
-pnpm run generate-client
+bun run generate-client
 ```
 
 - 提交更改。
@@ -161,3 +122,33 @@ VITE_API_URL=https://api.my-domain.example.com
 - `frontend/src/utils` - 工具。
 - `frontend/src/views` - 页面视图。
 - `frontend/types` - 全局类型。
+
+## 使用Playwright进行端到端测试
+
+前端项目内置了基于 Playwright 编写的初步端到端测试。执行测试前，需先启动 Docker Compose 整套服务环境，使用下述命令启动服务集群：
+
+```bash
+docker compose up -d --wait backend
+```
+
+之后，你可以在项目根目录，通过下面的命令执行测试：
+
+```bash
+bun run test
+```
+
+你也可以通过 UI 可视化模式运行测试，实时查看浏览器运行画面并与其交互。
+
+```bash
+bun run test:ui
+```
+
+如需停止并移除 Docker Compose 服务集群并清理测试过程中生成的数据，执行以下命令：
+
+```bash
+docker compose down -v
+```
+
+如需更新测试用例，进入测试目录，按需修改现有测试文件或新增测试文件。
+
+如需了解更多编写与运行 Playwright 测试的相关内容，请查阅官方文档：[Playwright documentation](https://playwright.dev/docs/intro)。

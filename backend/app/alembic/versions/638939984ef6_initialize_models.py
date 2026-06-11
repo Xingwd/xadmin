@@ -1,7 +1,7 @@
 """initialize models
 
 Revision ID: 638939984ef6
-Revises: 
+Revises:
 Create Date: 2025-03-21 15:21:24.864299
 
 """

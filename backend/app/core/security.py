@@ -4,20 +4,25 @@ from enum import Enum
 from typing import Any
 
 import jwt
-from passlib.context import CryptContext
+from pwdlib import PasswordHash
+from pwdlib.hashers.argon2 import Argon2Hasher
+from pwdlib.hashers.bcrypt import BcryptHasher
 
 from app.core.config import settings
 from app.models.security import ApiPermission
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+password_hash = PasswordHash(
+    (
+        Argon2Hasher(),
+        BcryptHasher(),
+    )
+)
 
 
 ALGORITHM = "HS256"
 
 
-def create_access_token(subject: str | Any, scopes: Sequence[str] | None = None) -> str:
-    if scopes is None:
-        scopes = []
+def create_access_token(subject: str | Any, scopes: Sequence[str] = []) -> str:
     expire = datetime.now(timezone.utc) + timedelta(
         minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
     )
@@ -26,15 +31,17 @@ def create_access_token(subject: str | Any, scopes: Sequence[str] | None = None)
     return encoded_jwt
 
 
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
+def verify_password(
+    plain_password: str, hashed_password: str
+) -> tuple[bool, str | None]:
+    return password_hash.verify_and_update(plain_password, hashed_password)
 
 
 def get_password_hash(password: str) -> str:
-    return pwd_context.hash(password)
+    return password_hash.hash(password)
 
 
-def decode_token(token: str) -> Any:
+def decode_token(token: str) -> dict[str, Any]:
     return jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
 
 

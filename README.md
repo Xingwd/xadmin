@@ -15,12 +15,14 @@
   - 🎨 [Element Plus](https://element-plus.org) 用于前端组件。
   - 📊 [AntV](https://antv.antgroup.com) 用于可视化组件。
   - 🤖 一个自动化生成的前端客户端。
+  - 🧪 [Playwright](https://playwright.dev) 端到端测试。
   - 🦇 支持暗黑主题（Dark mode）。
 - 🐋 [Docker Compose](https://www.docker.com) 用于开发环境和生产环境。
 - 🔒 默认使用密码哈希来保证安全。
 - 🔑 JWT (JSON Web Token) 令牌和 Oauth2 用于权限验证。
 - ✅ 单元测试用了 [Pytest](https://pytest.org)。
 - 📞 [Traefik](https://traefik.io) 用于反向代理和负载均衡。
+- 🚢 基于 Docker Compose 的部署说明，包含前端 Traefik 反向代理的配置方法，通过该代理实现 HTTPS 证书自动申领与管理。
 
 ### 登录页
 

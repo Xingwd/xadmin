@@ -162,7 +162,7 @@ const { data: remoteQueryData, isLoading } = useQuery({
                 ...state.params,
                 skip: state.currentPage,
                 limit: state.pageSize,
-                quick_search: state.keyword,
+                quickSearch: state.keyword,
             },
         }),
     placeholderData: (previousData) => previousData,

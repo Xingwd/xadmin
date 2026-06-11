@@ -147,7 +147,7 @@ const onSubmitPre = () => {
 const onSubmit = async () => {
     state.submitLoading = true
     try {
-        await loginMutation.mutateAsync(form)
+        await loginMutation.mutateAsync({ formData: form })
     } catch {
         // error is handled by useAuth hook
     }

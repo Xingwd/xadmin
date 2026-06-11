@@ -49,8 +49,7 @@ docker compose stop frontend
 然后启动本地前端开发服务器：
 
 ```bash
-cd frontend
-pnpm run dev
+bun run dev
 ```
 
 或者你可以停止 Docker Compose 中的 `backend` 服务。
@@ -93,13 +92,13 @@ Traefik 将使用此功能将 `api.localhost.xadmin.com` 的流量传输到后�
 docker compose watch
 ```
 
-部署时，例如在生产环境中，主 Traefik 是在 Docker Compose 文件之外进行配置的。对于本地开发，在 `docker-compose.override.yml` 中有一个包含的 Traefik，只是为了让你测试域是否按预期工作，例如使用 `api.localhost.xadmin.com` 和 `dashboard.localhost.xadmin.com`。
+部署时，例如在生产环境中，主 Traefik 是在 Docker Compose 文件之外进行配置的。对于本地开发，在 `compose.override.yml` 中有一个包含的 Traefik，只是为了让你测试域是否按预期工作，例如使用 `api.localhost.xadmin.com` 和 `dashboard.localhost.xadmin.com`。
 
 ## Docker Compose 文件和环境参数
 
-有一个主要的 `docker-compose.yml` 文件，其中包含适用于整个堆栈的所有配置，它由 `docker compose` 自动使用。
+有一个主要的 `compose.yml` 文件，其中包含适用于整个堆栈的所有配置，它由 `docker compose` 自动使用。
 
-还有一个 `docker-compose.override.yml` 文件，其中包含开发环境的覆盖配置，例如将源代码挂载为卷。`docker compose` 会自动应用它，覆盖 `docker-compose.yml` 的配置。
+还有一个 `compose.override.yml` 文件，其中包含开发环境的覆盖配置，例如将源代码挂载为卷。`docker compose` 会自动应用它，覆盖 `compose.yml` 的配置。
 
 这些 Docker Compose 文件使用 `.env` 文件，该文件包含的配置将作为环境变量注入到容器中。
 
@@ -117,7 +116,61 @@ docker compose watch
 
 根据你的工作流程，你可能希望将其从 Git 中排除，例如，如果你的项目是公开的。在这种情况下，你必须确保设置一种方法，让你的持续集成工具在构建或部署项目时能够获取它。
 
-一种方法是将每个环境变量添加到你的持续集成/持续部署（CI/CD）系统中，并更新 `docker-compose.yml` 文件以读取那个特定的环境变量，而不是读取 `.env` 文件。
+一种方法是将每个环境变量添加到你的持续集成/持续部署（CI/CD）系统中，并更新 `compose.yml` 文件以读取那个特定的环境变量，而不是读取 `.env` 文件。
+
+## 前置提交钩子与代码静态检查
+
+我们使用一款名为 [prek](https://prek.j178.dev/) 的工具进行代码检查与代码格式化，它是 [Pre-commit](https://pre-commit.com/) 的现代化替代方案。
+
+安装该工具后，它会在 Git 执行代码提交操作前自动运行。借此确保代码在提交前就统一编码风格、完成格式化。
+
+项目根目录下存有配置文件 `.pre-commit-config.yaml`。
+
+### 安装prek自动运行
+
+`prek` 已被纳入本项目依赖项。
+
+完成 `prek` 工具安装并配置可用后，还需在本地代码仓库中执行初始化安装，使其在每次代码提交前自动触发运行。
+
+借助包管理工具 `uv` 可执行下述命令（请确认当前工作目录位于 `backend` 文件夹内）：
+
+```bash
+❯ uv run prek install -f
+prek installed at `../.git/hooks/pre-commit`
+```
+
+参数 `-f` 用于强制安装，适用于本地此前已经安装过 `pre-commit` 钩子的场景。
+
+此后每当你执行代码提交操作，例如使用如下命令：
+
+```bash
+git commit
+```
+
+`prek` 会自动执行，在提交代码之前进行校验与格式化处理；若代码被改动，会要求你重新通过 Git 暂存代码后再提交。
+
+之后你再次执行 `git add` 命令添加修改修复后的文件，即可正常提交代码。
+
+### 手动执行prek钩子
+
+你也可以使用 `uv` 手动对全部文件执行 `prek` 校验，执行命令如下：
+
+```bash
+❯ uv run prek run --all-files
+check for added large files..............................................Passed
+check toml...............................................................Passed
+check yaml...............................................................Passed
+fix end of files.........................................................Passed
+trim trailing whitespace.................................................Passed
+eslint fix...............................................................Passed
+prettier format..........................................................Passed
+vue-tsc typecheck........................................................Passed
+ruff check...............................................................Passed
+ruff format..............................................................Passed
+mypy check...............................................................Passed
+ty check.................................................................Passed
+Generate Frontend SDK....................................................Passed
+```
 
 ## URLs
 

@@ -5,8 +5,7 @@ description = ""
 requires-python = ">=3.10,<4.0"
 dependencies = [
     "fastapi[standard]<1.0.0,>=0.114.2",
-    "python-multipart<1.0.0,>=0.0.7",
-    "passlib[bcrypt]<2.0.0,>=1.7.4",
+    "python-multipart<1.0.0,>=0.0.27",
     "tenacity<9.0.0,>=8.2.3",
     "pydantic>2.0",
     "jinja2<4.0.0,>=3.1.4",
@@ -14,18 +13,18 @@ dependencies = [
     "httpx<1.0.0,>=0.25.1",
     "psycopg[binary]<4.0.0,>=3.1.13",
     "sqlmodel<1.0.0,>=0.0.21",
-    # Pin bcrypt until passlib supports the latest
-    "bcrypt==4.0.1",
     "pydantic-settings<3.0.0,>=2.2.1",
     "pyjwt<3.0.0,>=2.8.0",
+    "pwdlib[argon2,bcrypt]>=0.3.0",
 ]
 
-[tool.uv]
-dev-dependencies = [
+[dependency-groups]
+dev = [
     "pytest<8.0.0,>=7.4.3",
     "mypy<2.0.0,>=1.8.0",
+    "ty>=0.0.25",
     "ruff<1.0.0,>=0.2.2",
-    "types-passlib<2.0.0.0,>=1.7.7.20240106",
+    "prek>=0.2.24,<1.0.0",
     "coverage<8.0.0,>=7.4.3",
 ]
 
@@ -51,6 +50,7 @@ select = [
     "C4",  # flake8-comprehensions
     "UP",  # pyupgrade
     "ARG001", # unused arguments in functions
+    "T201",   # print statements are not allowed
 ]
 ignore = [
     "E501",  # line too long, handled by black
@@ -62,3 +62,20 @@ ignore = [
 [tool.ruff.lint.pyupgrade]
 # Preserve types, even if a file imports `from __future__ import annotations`.
 keep-runtime-typing = true
+
+[tool.coverage.run]
+source = ["app"]
+dynamic_context = "test_function"
+
+[tool.coverage.report]
+show_missing = true
+sort = "-Cover"
+
+[tool.coverage.html]
+show_contexts = true
+
+[tool.ty.src]
+exclude = ["**/alembic/"]
+
+[tool.ty.terminal]
+error-on-warning = true

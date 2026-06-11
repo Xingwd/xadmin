@@ -7,7 +7,7 @@ import { useNavTabs } from '/@/stores/navTabs'
 import { closeShade } from '/@/utils/pageShade'
 import { i18n } from '/@/lang/index'
 import { compact, reverse } from 'lodash-es'
-import { operationLogsSubmitOperationLog } from '/@/client'
+import { OperationLogsService } from '/@/client'
 
 /**
  * 导航失败有错误消息的路由push
@@ -80,7 +80,7 @@ export const onClickMenu = (menu: RouteRecordRaw) => {
     }
 
     if (['link', 'iframe'].includes(menu.meta?.menu_item_type as string)) {
-        operationLogsSubmitOperationLog({ query: { rule_name: menu.name as string } })
+        OperationLogsService.submitOperationLog({ ruleName: menu.name as string })
     }
 
     const config = useConfig()

@@ -77,7 +77,7 @@
                         :placeholder="t('Click select')"
                         :input-attr="{
                             remoteQueryKey: 'roles',
-                            remoteQuery: rolesReadRoles,
+                            remoteQuery: RolesService.readRoles,
                             initOptions: xaTable.form.items!.existingRoles,
                             multiple: true,
                             placeholder: t('Click select'),
@@ -105,7 +105,7 @@ import { regularPassword, buildValidatorData } from '/@/utils/validate'
 import type { FormInstance, FormItemRule } from 'element-plus'
 import FormItem from '/@/components/formItem/index.vue'
 import { useConfig } from '/@/stores/config'
-import { rolesReadRoles } from '/@/client'
+import { RolesService } from '/@/client'
 
 const config = useConfig()
 const formRef = ref<FormInstance>()
