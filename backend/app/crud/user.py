@@ -321,9 +321,7 @@ def get_user_home(*, session: Session, user: User) -> UserHome:
         col(OperationLog.name).in_(get_user_permissions(session=session, user=user)),
         col(OperationLog.response_status_code) >= 200,
         col(OperationLog.response_status_code) < 300,
-        col(OperationLog.request_path).not_in(
-            settings.USER_HOME_FEATURES_EXCLUDE_PATHS
-        ),
+        col(OperationLog.request_path).not_in(settings.HOME_FEATURE_EXCLUDE_PATHS),
     ]
     menus_statement = (
         select(
@@ -343,6 +341,7 @@ def get_user_home(*, session: Session, user: User) -> UserHome:
         )
         .group_by("menu")
         .order_by(func.count().desc())
+        .limit(settings.HOME_FEATURE_LIMIT)
     )
     menus = [
         UserMenuCount(menu=menu, count=count)

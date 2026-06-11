@@ -83,13 +83,14 @@ class Settings(BaseSettings):
         f"{API_V1_STR}/login/test-token": "测试Token",
         f"{API_V1_STR}/operation-logs/submit": "query_params.rule_name",
     }
-    USER_HOME_FEATURES_EXCLUDE_PATHS: Sequence[str] = [
+    HOME_FEATURE_EXCLUDE_PATHS: Sequence[str] = [
         f"{API_V1_STR}/login/access-token",
         f"{API_V1_STR}/login/test-token",
         f"{API_V1_STR}/users/home",
         f"{API_V1_STR}/users/me",
         f"{API_V1_STR}/users/operation-logs",
     ]
+    HOME_FEATURE_LIMIT: int = 5
 
     def _check_default_secret(self, var_name: str, value: str | None) -> None:
         if value == "changethis":
